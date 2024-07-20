@@ -1,7 +1,7 @@
 name: dart_flatgen
 description: A starting point for Dart libraries or applications.
 version: 1.0.0
-repository: https://github.com/coldstar-507/dart-fg
+repository: https://github.com/coldstar-507/dart-flatgen
 
 environment:
   sdk: ^3.2.0
