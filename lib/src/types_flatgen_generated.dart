@@ -297,16 +297,20 @@ class Root {
 
   NodeId? get primary => NodeId.reader.vTableGetNullable(_bc, _bcOffset, 4);
   NodeId? get secondary => NodeId.reader.vTableGetNullable(_bc, _bcOffset, 6);
-  int get kind => const fb.Uint8Reader().vTableGet(_bc, _bcOffset, 8, 0);
+  int get timestamp => const fb.Int64Reader().vTableGet(_bc, _bcOffset, 8, 0);
+  int get chatPlace => const fb.Uint16Reader().vTableGet(_bc, _bcOffset, 10, 0);
+  int get kind => const fb.Uint8Reader().vTableGet(_bc, _bcOffset, 12, 0);
 
   @override
   String toString() {
-    return 'Root{primary: ${primary}, secondary: ${secondary}, kind: ${kind}}';
+    return 'Root{primary: ${primary}, secondary: ${secondary}, timestamp: ${timestamp}, chatPlace: ${chatPlace}, kind: ${kind}}';
   }
 
   RootT unpack() => RootT(
       primary: primary?.unpack(),
       secondary: secondary?.unpack(),
+      timestamp: timestamp,
+      chatPlace: chatPlace,
       kind: kind);
 
   static int pack(fb.Builder fbBuilder, RootT? object) {
@@ -318,27 +322,33 @@ class Root {
 class RootT implements fb.Packable {
   NodeIdT? primary;
   NodeIdT? secondary;
+  int timestamp;
+  int chatPlace;
   int kind;
 
   RootT({
       this.primary,
       this.secondary,
+      this.timestamp = 0,
+      this.chatPlace = 0,
       this.kind = 0});
 
   @override
   int pack(fb.Builder fbBuilder) {
     final int? primaryOffset = primary?.pack(fbBuilder);
     final int? secondaryOffset = secondary?.pack(fbBuilder);
-    fbBuilder.startTable(3);
+    fbBuilder.startTable(5);
     fbBuilder.addOffset(0, primaryOffset);
     fbBuilder.addOffset(1, secondaryOffset);
-    fbBuilder.addUint8(2, kind);
+    fbBuilder.addInt64(2, timestamp);
+    fbBuilder.addUint16(3, chatPlace);
+    fbBuilder.addUint8(4, kind);
     return fbBuilder.endTable();
   }
 
   @override
   String toString() {
-    return 'RootT{primary: ${primary}, secondary: ${secondary}, kind: ${kind}}';
+    return 'RootT{primary: ${primary}, secondary: ${secondary}, timestamp: ${timestamp}, chatPlace: ${chatPlace}, kind: ${kind}}';
   }
 }
 
@@ -356,7 +366,7 @@ class RootBuilder {
   final fb.Builder fbBuilder;
 
   void begin() {
-    fbBuilder.startTable(3);
+    fbBuilder.startTable(5);
   }
 
   int addPrimaryOffset(int? offset) {
@@ -367,8 +377,16 @@ class RootBuilder {
     fbBuilder.addOffset(1, offset);
     return fbBuilder.offset;
   }
+  int addTimestamp(int? timestamp) {
+    fbBuilder.addInt64(2, timestamp);
+    return fbBuilder.offset;
+  }
+  int addChatPlace(int? chatPlace) {
+    fbBuilder.addUint16(3, chatPlace);
+    return fbBuilder.offset;
+  }
   int addKind(int? kind) {
-    fbBuilder.addUint8(2, kind);
+    fbBuilder.addUint8(4, kind);
     return fbBuilder.offset;
   }
 
@@ -380,15 +398,21 @@ class RootBuilder {
 class RootObjectBuilder extends fb.ObjectBuilder {
   final NodeIdObjectBuilder? _primary;
   final NodeIdObjectBuilder? _secondary;
+  final int? _timestamp;
+  final int? _chatPlace;
   final int? _kind;
 
   RootObjectBuilder({
     NodeIdObjectBuilder? primary,
     NodeIdObjectBuilder? secondary,
+    int? timestamp,
+    int? chatPlace,
     int? kind,
   })
       : _primary = primary,
         _secondary = secondary,
+        _timestamp = timestamp,
+        _chatPlace = chatPlace,
         _kind = kind;
 
   /// Finish building, and store into the [fbBuilder].
@@ -396,10 +420,12 @@ class RootObjectBuilder extends fb.ObjectBuilder {
   int finish(fb.Builder fbBuilder) {
     final int? primaryOffset = _primary?.getOrCreateOffset(fbBuilder);
     final int? secondaryOffset = _secondary?.getOrCreateOffset(fbBuilder);
-    fbBuilder.startTable(3);
+    fbBuilder.startTable(5);
     fbBuilder.addOffset(0, primaryOffset);
     fbBuilder.addOffset(1, secondaryOffset);
-    fbBuilder.addUint8(2, _kind);
+    fbBuilder.addInt64(2, _timestamp);
+    fbBuilder.addUint16(3, _chatPlace);
+    fbBuilder.addUint8(4, _kind);
     return fbBuilder.endTable();
   }
 
