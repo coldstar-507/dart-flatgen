@@ -171,17 +171,19 @@ class NodeId {
   final fb.BufferContext _bc;
   final int _bcOffset;
 
-  int get tss => const fb.Uint32Reader().vTableGet(_bc, _bcOffset, 4, 0);
+  int get timestamp => const fb.Int64Reader().vTableGet(_bc, _bcOffset, 4, 0);
   int get u32 => const fb.Uint32Reader().vTableGet(_bc, _bcOffset, 6, 0);
+  int get kind => const fb.Uint8Reader().vTableGet(_bc, _bcOffset, 8, 0);
 
   @override
   String toString() {
-    return 'NodeId{tss: ${tss}, u32: ${u32}}';
+    return 'NodeId{timestamp: ${timestamp}, u32: ${u32}, kind: ${kind}}';
   }
 
   NodeIdT unpack() => NodeIdT(
-      tss: tss,
-      u32: u32);
+      timestamp: timestamp,
+      u32: u32,
+      kind: kind);
 
   static int pack(fb.Builder fbBuilder, NodeIdT? object) {
     if (object == null) return 0;
@@ -190,24 +192,27 @@ class NodeId {
 }
 
 class NodeIdT implements fb.Packable {
-  int tss;
+  int timestamp;
   int u32;
+  int kind;
 
   NodeIdT({
-      this.tss = 0,
-      this.u32 = 0});
+      this.timestamp = 0,
+      this.u32 = 0,
+      this.kind = 0});
 
   @override
   int pack(fb.Builder fbBuilder) {
-    fbBuilder.startTable(2);
-    fbBuilder.addUint32(0, tss);
+    fbBuilder.startTable(3);
+    fbBuilder.addInt64(0, timestamp);
     fbBuilder.addUint32(1, u32);
+    fbBuilder.addUint8(2, kind);
     return fbBuilder.endTable();
   }
 
   @override
   String toString() {
-    return 'NodeIdT{tss: ${tss}, u32: ${u32}}';
+    return 'NodeIdT{timestamp: ${timestamp}, u32: ${u32}, kind: ${kind}}';
   }
 }
 
@@ -225,15 +230,19 @@ class NodeIdBuilder {
   final fb.Builder fbBuilder;
 
   void begin() {
-    fbBuilder.startTable(2);
+    fbBuilder.startTable(3);
   }
 
-  int addTss(int? tss) {
-    fbBuilder.addUint32(0, tss);
+  int addTimestamp(int? timestamp) {
+    fbBuilder.addInt64(0, timestamp);
     return fbBuilder.offset;
   }
   int addU32(int? u32) {
     fbBuilder.addUint32(1, u32);
+    return fbBuilder.offset;
+  }
+  int addKind(int? kind) {
+    fbBuilder.addUint8(2, kind);
     return fbBuilder.offset;
   }
 
@@ -243,137 +252,26 @@ class NodeIdBuilder {
 }
 
 class NodeIdObjectBuilder extends fb.ObjectBuilder {
-  final int? _tss;
+  final int? _timestamp;
   final int? _u32;
+  final int? _kind;
 
   NodeIdObjectBuilder({
-    int? tss,
+    int? timestamp,
     int? u32,
+    int? kind,
   })
-      : _tss = tss,
-        _u32 = u32;
+      : _timestamp = timestamp,
+        _u32 = u32,
+        _kind = kind;
 
   /// Finish building, and store into the [fbBuilder].
   @override
   int finish(fb.Builder fbBuilder) {
-    fbBuilder.startTable(2);
-    fbBuilder.addUint32(0, _tss);
+    fbBuilder.startTable(3);
+    fbBuilder.addInt64(0, _timestamp);
     fbBuilder.addUint32(1, _u32);
-    return fbBuilder.endTable();
-  }
-
-  /// Convenience method to serialize to byte list.
-  @override
-  Uint8List toBytes([String? fileIdentifier]) {
-    final fbBuilder = fb.Builder(deduplicateTables: false);
-    fbBuilder.finish(finish(fbBuilder), fileIdentifier);
-    return fbBuilder.buffer;
-  }
-}
-class DualNodeId {
-  DualNodeId._(this._bc, this._bcOffset);
-  factory DualNodeId(List<int> bytes) {
-    final rootRef = fb.BufferContext.fromBytes(bytes);
-    return reader.read(rootRef, 0);
-  }
-
-  static const fb.Reader<DualNodeId> reader = _DualNodeIdReader();
-
-  final fb.BufferContext _bc;
-  final int _bcOffset;
-
-  NodeId? get primary => NodeId.reader.vTableGetNullable(_bc, _bcOffset, 4);
-  NodeId? get secondary => NodeId.reader.vTableGetNullable(_bc, _bcOffset, 6);
-
-  @override
-  String toString() {
-    return 'DualNodeId{primary: ${primary}, secondary: ${secondary}}';
-  }
-
-  DualNodeIdT unpack() => DualNodeIdT(
-      primary: primary?.unpack(),
-      secondary: secondary?.unpack());
-
-  static int pack(fb.Builder fbBuilder, DualNodeIdT? object) {
-    if (object == null) return 0;
-    return object.pack(fbBuilder);
-  }
-}
-
-class DualNodeIdT implements fb.Packable {
-  NodeIdT? primary;
-  NodeIdT? secondary;
-
-  DualNodeIdT({
-      this.primary,
-      this.secondary});
-
-  @override
-  int pack(fb.Builder fbBuilder) {
-    final int? primaryOffset = primary?.pack(fbBuilder);
-    final int? secondaryOffset = secondary?.pack(fbBuilder);
-    fbBuilder.startTable(2);
-    fbBuilder.addOffset(0, primaryOffset);
-    fbBuilder.addOffset(1, secondaryOffset);
-    return fbBuilder.endTable();
-  }
-
-  @override
-  String toString() {
-    return 'DualNodeIdT{primary: ${primary}, secondary: ${secondary}}';
-  }
-}
-
-class _DualNodeIdReader extends fb.TableReader<DualNodeId> {
-  const _DualNodeIdReader();
-
-  @override
-  DualNodeId createObject(fb.BufferContext bc, int offset) => 
-    DualNodeId._(bc, offset);
-}
-
-class DualNodeIdBuilder {
-  DualNodeIdBuilder(this.fbBuilder);
-
-  final fb.Builder fbBuilder;
-
-  void begin() {
-    fbBuilder.startTable(2);
-  }
-
-  int addPrimaryOffset(int? offset) {
-    fbBuilder.addOffset(0, offset);
-    return fbBuilder.offset;
-  }
-  int addSecondaryOffset(int? offset) {
-    fbBuilder.addOffset(1, offset);
-    return fbBuilder.offset;
-  }
-
-  int finish() {
-    return fbBuilder.endTable();
-  }
-}
-
-class DualNodeIdObjectBuilder extends fb.ObjectBuilder {
-  final NodeIdObjectBuilder? _primary;
-  final NodeIdObjectBuilder? _secondary;
-
-  DualNodeIdObjectBuilder({
-    NodeIdObjectBuilder? primary,
-    NodeIdObjectBuilder? secondary,
-  })
-      : _primary = primary,
-        _secondary = secondary;
-
-  /// Finish building, and store into the [fbBuilder].
-  @override
-  int finish(fb.Builder fbBuilder) {
-    final int? primaryOffset = _primary?.getOrCreateOffset(fbBuilder);
-    final int? secondaryOffset = _secondary?.getOrCreateOffset(fbBuilder);
-    fbBuilder.startTable(2);
-    fbBuilder.addOffset(0, primaryOffset);
-    fbBuilder.addOffset(1, secondaryOffset);
+    fbBuilder.addUint8(2, _kind);
     return fbBuilder.endTable();
   }
 
@@ -397,17 +295,19 @@ class Root {
   final fb.BufferContext _bc;
   final int _bcOffset;
 
-  NodeId? get single => NodeId.reader.vTableGetNullable(_bc, _bcOffset, 4);
-  DualNodeId? get dual => DualNodeId.reader.vTableGetNullable(_bc, _bcOffset, 6);
+  NodeId? get primary => NodeId.reader.vTableGetNullable(_bc, _bcOffset, 4);
+  NodeId? get secondary => NodeId.reader.vTableGetNullable(_bc, _bcOffset, 6);
+  int get kind => const fb.Uint8Reader().vTableGet(_bc, _bcOffset, 8, 0);
 
   @override
   String toString() {
-    return 'Root{single: ${single}, dual: ${dual}}';
+    return 'Root{primary: ${primary}, secondary: ${secondary}, kind: ${kind}}';
   }
 
   RootT unpack() => RootT(
-      single: single?.unpack(),
-      dual: dual?.unpack());
+      primary: primary?.unpack(),
+      secondary: secondary?.unpack(),
+      kind: kind);
 
   static int pack(fb.Builder fbBuilder, RootT? object) {
     if (object == null) return 0;
@@ -416,26 +316,29 @@ class Root {
 }
 
 class RootT implements fb.Packable {
-  NodeIdT? single;
-  DualNodeIdT? dual;
+  NodeIdT? primary;
+  NodeIdT? secondary;
+  int kind;
 
   RootT({
-      this.single,
-      this.dual});
+      this.primary,
+      this.secondary,
+      this.kind = 0});
 
   @override
   int pack(fb.Builder fbBuilder) {
-    final int? singleOffset = single?.pack(fbBuilder);
-    final int? dualOffset = dual?.pack(fbBuilder);
-    fbBuilder.startTable(2);
-    fbBuilder.addOffset(0, singleOffset);
-    fbBuilder.addOffset(1, dualOffset);
+    final int? primaryOffset = primary?.pack(fbBuilder);
+    final int? secondaryOffset = secondary?.pack(fbBuilder);
+    fbBuilder.startTable(3);
+    fbBuilder.addOffset(0, primaryOffset);
+    fbBuilder.addOffset(1, secondaryOffset);
+    fbBuilder.addUint8(2, kind);
     return fbBuilder.endTable();
   }
 
   @override
   String toString() {
-    return 'RootT{single: ${single}, dual: ${dual}}';
+    return 'RootT{primary: ${primary}, secondary: ${secondary}, kind: ${kind}}';
   }
 }
 
@@ -453,15 +356,19 @@ class RootBuilder {
   final fb.Builder fbBuilder;
 
   void begin() {
-    fbBuilder.startTable(2);
+    fbBuilder.startTable(3);
   }
 
-  int addSingleOffset(int? offset) {
+  int addPrimaryOffset(int? offset) {
     fbBuilder.addOffset(0, offset);
     return fbBuilder.offset;
   }
-  int addDualOffset(int? offset) {
+  int addSecondaryOffset(int? offset) {
     fbBuilder.addOffset(1, offset);
+    return fbBuilder.offset;
+  }
+  int addKind(int? kind) {
+    fbBuilder.addUint8(2, kind);
     return fbBuilder.offset;
   }
 
@@ -471,24 +378,28 @@ class RootBuilder {
 }
 
 class RootObjectBuilder extends fb.ObjectBuilder {
-  final NodeIdObjectBuilder? _single;
-  final DualNodeIdObjectBuilder? _dual;
+  final NodeIdObjectBuilder? _primary;
+  final NodeIdObjectBuilder? _secondary;
+  final int? _kind;
 
   RootObjectBuilder({
-    NodeIdObjectBuilder? single,
-    DualNodeIdObjectBuilder? dual,
+    NodeIdObjectBuilder? primary,
+    NodeIdObjectBuilder? secondary,
+    int? kind,
   })
-      : _single = single,
-        _dual = dual;
+      : _primary = primary,
+        _secondary = secondary,
+        _kind = kind;
 
   /// Finish building, and store into the [fbBuilder].
   @override
   int finish(fb.Builder fbBuilder) {
-    final int? singleOffset = _single?.getOrCreateOffset(fbBuilder);
-    final int? dualOffset = _dual?.getOrCreateOffset(fbBuilder);
-    fbBuilder.startTable(2);
-    fbBuilder.addOffset(0, singleOffset);
-    fbBuilder.addOffset(1, dualOffset);
+    final int? primaryOffset = _primary?.getOrCreateOffset(fbBuilder);
+    final int? secondaryOffset = _secondary?.getOrCreateOffset(fbBuilder);
+    fbBuilder.startTable(3);
+    fbBuilder.addOffset(0, primaryOffset);
+    fbBuilder.addOffset(1, secondaryOffset);
+    fbBuilder.addUint8(2, _kind);
     return fbBuilder.endTable();
   }
 
@@ -652,20 +563,22 @@ class PushId {
   int get u32 => const fb.Uint32Reader().vTableGet(_bc, _bcOffset, 4, 0);
   int get timestamp => const fb.Int64Reader().vTableGet(_bc, _bcOffset, 6, 0);
   int get place => const fb.Uint16Reader().vTableGet(_bc, _bcOffset, 8, 0);
-  Root? get root => Root.reader.vTableGetNullable(_bc, _bcOffset, 10);
+  NodeId? get nodeId => NodeId.reader.vTableGetNullable(_bc, _bcOffset, 10);
   int get device => const fb.Uint32Reader().vTableGet(_bc, _bcOffset, 12, 0);
+  int get kind => const fb.Uint8Reader().vTableGet(_bc, _bcOffset, 14, 0);
 
   @override
   String toString() {
-    return 'PushId{u32: ${u32}, timestamp: ${timestamp}, place: ${place}, root: ${root}, device: ${device}}';
+    return 'PushId{u32: ${u32}, timestamp: ${timestamp}, place: ${place}, nodeId: ${nodeId}, device: ${device}, kind: ${kind}}';
   }
 
   PushIdT unpack() => PushIdT(
       u32: u32,
       timestamp: timestamp,
       place: place,
-      root: root?.unpack(),
-      device: device);
+      nodeId: nodeId?.unpack(),
+      device: device,
+      kind: kind);
 
   static int pack(fb.Builder fbBuilder, PushIdT? object) {
     if (object == null) return 0;
@@ -677,31 +590,34 @@ class PushIdT implements fb.Packable {
   int u32;
   int timestamp;
   int place;
-  RootT? root;
+  NodeIdT? nodeId;
   int device;
+  int kind;
 
   PushIdT({
       this.u32 = 0,
       this.timestamp = 0,
       this.place = 0,
-      this.root,
-      this.device = 0});
+      this.nodeId,
+      this.device = 0,
+      this.kind = 0});
 
   @override
   int pack(fb.Builder fbBuilder) {
-    final int? rootOffset = root?.pack(fbBuilder);
-    fbBuilder.startTable(5);
+    final int? nodeIdOffset = nodeId?.pack(fbBuilder);
+    fbBuilder.startTable(6);
     fbBuilder.addUint32(0, u32);
     fbBuilder.addInt64(1, timestamp);
     fbBuilder.addUint16(2, place);
-    fbBuilder.addOffset(3, rootOffset);
+    fbBuilder.addOffset(3, nodeIdOffset);
     fbBuilder.addUint32(4, device);
+    fbBuilder.addUint8(5, kind);
     return fbBuilder.endTable();
   }
 
   @override
   String toString() {
-    return 'PushIdT{u32: ${u32}, timestamp: ${timestamp}, place: ${place}, root: ${root}, device: ${device}}';
+    return 'PushIdT{u32: ${u32}, timestamp: ${timestamp}, place: ${place}, nodeId: ${nodeId}, device: ${device}, kind: ${kind}}';
   }
 }
 
@@ -719,7 +635,7 @@ class PushIdBuilder {
   final fb.Builder fbBuilder;
 
   void begin() {
-    fbBuilder.startTable(5);
+    fbBuilder.startTable(6);
   }
 
   int addU32(int? u32) {
@@ -734,12 +650,16 @@ class PushIdBuilder {
     fbBuilder.addUint16(2, place);
     return fbBuilder.offset;
   }
-  int addRootOffset(int? offset) {
+  int addNodeIdOffset(int? offset) {
     fbBuilder.addOffset(3, offset);
     return fbBuilder.offset;
   }
   int addDevice(int? device) {
     fbBuilder.addUint32(4, device);
+    return fbBuilder.offset;
+  }
+  int addKind(int? kind) {
+    fbBuilder.addUint8(5, kind);
     return fbBuilder.offset;
   }
 
@@ -752,32 +672,36 @@ class PushIdObjectBuilder extends fb.ObjectBuilder {
   final int? _u32;
   final int? _timestamp;
   final int? _place;
-  final RootObjectBuilder? _root;
+  final NodeIdObjectBuilder? _nodeId;
   final int? _device;
+  final int? _kind;
 
   PushIdObjectBuilder({
     int? u32,
     int? timestamp,
     int? place,
-    RootObjectBuilder? root,
+    NodeIdObjectBuilder? nodeId,
     int? device,
+    int? kind,
   })
       : _u32 = u32,
         _timestamp = timestamp,
         _place = place,
-        _root = root,
-        _device = device;
+        _nodeId = nodeId,
+        _device = device,
+        _kind = kind;
 
   /// Finish building, and store into the [fbBuilder].
   @override
   int finish(fb.Builder fbBuilder) {
-    final int? rootOffset = _root?.getOrCreateOffset(fbBuilder);
-    fbBuilder.startTable(5);
+    final int? nodeIdOffset = _nodeId?.getOrCreateOffset(fbBuilder);
+    fbBuilder.startTable(6);
     fbBuilder.addUint32(0, _u32);
     fbBuilder.addInt64(1, _timestamp);
     fbBuilder.addUint16(2, _place);
-    fbBuilder.addOffset(3, rootOffset);
+    fbBuilder.addOffset(3, nodeIdOffset);
     fbBuilder.addUint32(4, _device);
+    fbBuilder.addUint8(5, _kind);
     return fbBuilder.endTable();
   }
 
