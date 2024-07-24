@@ -146,6 +146,195 @@ class MessageIdObjectBuilder extends fb.ObjectBuilder {
     return fbBuilder.buffer;
   }
 }
+class MediaId {
+  MediaId._(this._bc, this._bcOffset);
+  factory MediaId(List<int> bytes) {
+    final rootRef = fb.BufferContext.fromBytes(bytes);
+    return reader.read(rootRef, 0);
+  }
+
+  static const fb.Reader<MediaId> reader = _MediaIdReader();
+
+  final fb.BufferContext _bc;
+  final int _bcOffset;
+
+  int get timestamp => const fb.Int64Reader().vTableGet(_bc, _bcOffset, 4, 0);
+  int get u32 => const fb.Uint32Reader().vTableGet(_bc, _bcOffset, 6, 0);
+  int get place => const fb.Uint16Reader().vTableGet(_bc, _bcOffset, 8, 0);
+  int get width => const fb.Uint16Reader().vTableGet(_bc, _bcOffset, 10, 0);
+  int get height => const fb.Uint16Reader().vTableGet(_bc, _bcOffset, 12, 0);
+  bool get squared => const fb.BoolReader().vTableGet(_bc, _bcOffset, 14, false);
+  bool get video => const fb.BoolReader().vTableGet(_bc, _bcOffset, 16, false);
+  int get kind => const fb.Uint8Reader().vTableGet(_bc, _bcOffset, 18, 0);
+
+  @override
+  String toString() {
+    return 'MediaId{timestamp: ${timestamp}, u32: ${u32}, place: ${place}, width: ${width}, height: ${height}, squared: ${squared}, video: ${video}, kind: ${kind}}';
+  }
+
+  MediaIdT unpack() => MediaIdT(
+      timestamp: timestamp,
+      u32: u32,
+      place: place,
+      width: width,
+      height: height,
+      squared: squared,
+      video: video,
+      kind: kind);
+
+  static int pack(fb.Builder fbBuilder, MediaIdT? object) {
+    if (object == null) return 0;
+    return object.pack(fbBuilder);
+  }
+}
+
+class MediaIdT implements fb.Packable {
+  int timestamp;
+  int u32;
+  int place;
+  int width;
+  int height;
+  bool squared;
+  bool video;
+  int kind;
+
+  MediaIdT({
+      this.timestamp = 0,
+      this.u32 = 0,
+      this.place = 0,
+      this.width = 0,
+      this.height = 0,
+      this.squared = false,
+      this.video = false,
+      this.kind = 0});
+
+  @override
+  int pack(fb.Builder fbBuilder) {
+    fbBuilder.startTable(8);
+    fbBuilder.addInt64(0, timestamp);
+    fbBuilder.addUint32(1, u32);
+    fbBuilder.addUint16(2, place);
+    fbBuilder.addUint16(3, width);
+    fbBuilder.addUint16(4, height);
+    fbBuilder.addBool(5, squared);
+    fbBuilder.addBool(6, video);
+    fbBuilder.addUint8(7, kind);
+    return fbBuilder.endTable();
+  }
+
+  @override
+  String toString() {
+    return 'MediaIdT{timestamp: ${timestamp}, u32: ${u32}, place: ${place}, width: ${width}, height: ${height}, squared: ${squared}, video: ${video}, kind: ${kind}}';
+  }
+}
+
+class _MediaIdReader extends fb.TableReader<MediaId> {
+  const _MediaIdReader();
+
+  @override
+  MediaId createObject(fb.BufferContext bc, int offset) => 
+    MediaId._(bc, offset);
+}
+
+class MediaIdBuilder {
+  MediaIdBuilder(this.fbBuilder);
+
+  final fb.Builder fbBuilder;
+
+  void begin() {
+    fbBuilder.startTable(8);
+  }
+
+  int addTimestamp(int? timestamp) {
+    fbBuilder.addInt64(0, timestamp);
+    return fbBuilder.offset;
+  }
+  int addU32(int? u32) {
+    fbBuilder.addUint32(1, u32);
+    return fbBuilder.offset;
+  }
+  int addPlace(int? place) {
+    fbBuilder.addUint16(2, place);
+    return fbBuilder.offset;
+  }
+  int addWidth(int? width) {
+    fbBuilder.addUint16(3, width);
+    return fbBuilder.offset;
+  }
+  int addHeight(int? height) {
+    fbBuilder.addUint16(4, height);
+    return fbBuilder.offset;
+  }
+  int addSquared(bool? squared) {
+    fbBuilder.addBool(5, squared);
+    return fbBuilder.offset;
+  }
+  int addVideo(bool? video) {
+    fbBuilder.addBool(6, video);
+    return fbBuilder.offset;
+  }
+  int addKind(int? kind) {
+    fbBuilder.addUint8(7, kind);
+    return fbBuilder.offset;
+  }
+
+  int finish() {
+    return fbBuilder.endTable();
+  }
+}
+
+class MediaIdObjectBuilder extends fb.ObjectBuilder {
+  final int? _timestamp;
+  final int? _u32;
+  final int? _place;
+  final int? _width;
+  final int? _height;
+  final bool? _squared;
+  final bool? _video;
+  final int? _kind;
+
+  MediaIdObjectBuilder({
+    int? timestamp,
+    int? u32,
+    int? place,
+    int? width,
+    int? height,
+    bool? squared,
+    bool? video,
+    int? kind,
+  })
+      : _timestamp = timestamp,
+        _u32 = u32,
+        _place = place,
+        _width = width,
+        _height = height,
+        _squared = squared,
+        _video = video,
+        _kind = kind;
+
+  /// Finish building, and store into the [fbBuilder].
+  @override
+  int finish(fb.Builder fbBuilder) {
+    fbBuilder.startTable(8);
+    fbBuilder.addInt64(0, _timestamp);
+    fbBuilder.addUint32(1, _u32);
+    fbBuilder.addUint16(2, _place);
+    fbBuilder.addUint16(3, _width);
+    fbBuilder.addUint16(4, _height);
+    fbBuilder.addBool(5, _squared);
+    fbBuilder.addBool(6, _video);
+    fbBuilder.addUint8(7, _kind);
+    return fbBuilder.endTable();
+  }
+
+  /// Convenience method to serialize to byte list.
+  @override
+  Uint8List toBytes([String? fileIdentifier]) {
+    final fbBuilder = fb.Builder(deduplicateTables: false);
+    fbBuilder.finish(finish(fbBuilder), fileIdentifier);
+    return fbBuilder.buffer;
+  }
+}
 class NodeId {
   NodeId._(this._bc, this._bcOffset);
   factory NodeId(List<int> bytes) {
@@ -1127,25 +1316,26 @@ class MediaMetadata {
   final fb.BufferContext _bc;
   final int _bcOffset;
 
-  String? get timeId => const fb.StringReader().vTableGetNullable(_bc, _bcOffset, 4);
-  String? get ownerId => const fb.StringReader().vTableGetNullable(_bc, _bcOffset, 6);
-  int get timestamp => const fb.Int64Reader().vTableGet(_bc, _bcOffset, 8, 0);
-  String? get mime => const fb.StringReader().vTableGetNullable(_bc, _bcOffset, 10);
-  bool get isReversed => const fb.BoolReader().vTableGet(_bc, _bcOffset, 12, false);
-  bool get isEncrypted => const fb.BoolReader().vTableGet(_bc, _bcOffset, 14, false);
-  bool get isPaidToView => const fb.BoolReader().vTableGet(_bc, _bcOffset, 16, false);
-  bool get isPaidToOwn => const fb.BoolReader().vTableGet(_bc, _bcOffset, 18, false);
-  bool get isLocked => const fb.BoolReader().vTableGet(_bc, _bcOffset, 20, false);
-  bool get isSaved => const fb.BoolReader().vTableGet(_bc, _bcOffset, 22, false);
-  String? get temp => const fb.StringReader().vTableGetNullable(_bc, _bcOffset, 24);
+  MediaId? get mediaId => MediaId.reader.vTableGetNullable(_bc, _bcOffset, 4);
+  TempId? get tempId => TempId.reader.vTableGetNullable(_bc, _bcOffset, 6);
+  String? get ownerId => const fb.StringReader().vTableGetNullable(_bc, _bcOffset, 8);
+  int get timestamp => const fb.Int64Reader().vTableGet(_bc, _bcOffset, 10, 0);
+  String? get mime => const fb.StringReader().vTableGetNullable(_bc, _bcOffset, 12);
+  bool get isReversed => const fb.BoolReader().vTableGet(_bc, _bcOffset, 14, false);
+  bool get isEncrypted => const fb.BoolReader().vTableGet(_bc, _bcOffset, 16, false);
+  bool get isPaidToView => const fb.BoolReader().vTableGet(_bc, _bcOffset, 18, false);
+  bool get isPaidToOwn => const fb.BoolReader().vTableGet(_bc, _bcOffset, 20, false);
+  bool get isLocked => const fb.BoolReader().vTableGet(_bc, _bcOffset, 22, false);
+  bool get isSaved => const fb.BoolReader().vTableGet(_bc, _bcOffset, 24, false);
 
   @override
   String toString() {
-    return 'MediaMetadata{timeId: ${timeId}, ownerId: ${ownerId}, timestamp: ${timestamp}, mime: ${mime}, isReversed: ${isReversed}, isEncrypted: ${isEncrypted}, isPaidToView: ${isPaidToView}, isPaidToOwn: ${isPaidToOwn}, isLocked: ${isLocked}, isSaved: ${isSaved}, temp: ${temp}}';
+    return 'MediaMetadata{mediaId: ${mediaId}, tempId: ${tempId}, ownerId: ${ownerId}, timestamp: ${timestamp}, mime: ${mime}, isReversed: ${isReversed}, isEncrypted: ${isEncrypted}, isPaidToView: ${isPaidToView}, isPaidToOwn: ${isPaidToOwn}, isLocked: ${isLocked}, isSaved: ${isSaved}}';
   }
 
   MediaMetadataT unpack() => MediaMetadataT(
-      timeId: timeId,
+      mediaId: mediaId?.unpack(),
+      tempId: tempId?.unpack(),
       ownerId: ownerId,
       timestamp: timestamp,
       mime: mime,
@@ -1154,8 +1344,7 @@ class MediaMetadata {
       isPaidToView: isPaidToView,
       isPaidToOwn: isPaidToOwn,
       isLocked: isLocked,
-      isSaved: isSaved,
-      temp: temp);
+      isSaved: isSaved);
 
   static int pack(fb.Builder fbBuilder, MediaMetadataT? object) {
     if (object == null) return 0;
@@ -1164,7 +1353,8 @@ class MediaMetadata {
 }
 
 class MediaMetadataT implements fb.Packable {
-  String? timeId;
+  MediaIdT? mediaId;
+  TempIdT? tempId;
   String? ownerId;
   int timestamp;
   String? mime;
@@ -1174,10 +1364,10 @@ class MediaMetadataT implements fb.Packable {
   bool isPaidToOwn;
   bool isLocked;
   bool isSaved;
-  String? temp;
 
   MediaMetadataT({
-      this.timeId,
+      this.mediaId,
+      this.tempId,
       this.ownerId,
       this.timestamp = 0,
       this.mime,
@@ -1186,37 +1376,34 @@ class MediaMetadataT implements fb.Packable {
       this.isPaidToView = false,
       this.isPaidToOwn = false,
       this.isLocked = false,
-      this.isSaved = false,
-      this.temp});
+      this.isSaved = false});
 
   @override
   int pack(fb.Builder fbBuilder) {
-    final int? timeIdOffset = timeId == null ? null
-        : fbBuilder.writeString(timeId!);
+    final int? mediaIdOffset = mediaId?.pack(fbBuilder);
+    final int? tempIdOffset = tempId?.pack(fbBuilder);
     final int? ownerIdOffset = ownerId == null ? null
         : fbBuilder.writeString(ownerId!);
     final int? mimeOffset = mime == null ? null
         : fbBuilder.writeString(mime!);
-    final int? tempOffset = temp == null ? null
-        : fbBuilder.writeString(temp!);
     fbBuilder.startTable(11);
-    fbBuilder.addOffset(0, timeIdOffset);
-    fbBuilder.addOffset(1, ownerIdOffset);
-    fbBuilder.addInt64(2, timestamp);
-    fbBuilder.addOffset(3, mimeOffset);
-    fbBuilder.addBool(4, isReversed);
-    fbBuilder.addBool(5, isEncrypted);
-    fbBuilder.addBool(6, isPaidToView);
-    fbBuilder.addBool(7, isPaidToOwn);
-    fbBuilder.addBool(8, isLocked);
-    fbBuilder.addBool(9, isSaved);
-    fbBuilder.addOffset(10, tempOffset);
+    fbBuilder.addOffset(0, mediaIdOffset);
+    fbBuilder.addOffset(1, tempIdOffset);
+    fbBuilder.addOffset(2, ownerIdOffset);
+    fbBuilder.addInt64(3, timestamp);
+    fbBuilder.addOffset(4, mimeOffset);
+    fbBuilder.addBool(5, isReversed);
+    fbBuilder.addBool(6, isEncrypted);
+    fbBuilder.addBool(7, isPaidToView);
+    fbBuilder.addBool(8, isPaidToOwn);
+    fbBuilder.addBool(9, isLocked);
+    fbBuilder.addBool(10, isSaved);
     return fbBuilder.endTable();
   }
 
   @override
   String toString() {
-    return 'MediaMetadataT{timeId: ${timeId}, ownerId: ${ownerId}, timestamp: ${timestamp}, mime: ${mime}, isReversed: ${isReversed}, isEncrypted: ${isEncrypted}, isPaidToView: ${isPaidToView}, isPaidToOwn: ${isPaidToOwn}, isLocked: ${isLocked}, isSaved: ${isSaved}, temp: ${temp}}';
+    return 'MediaMetadataT{mediaId: ${mediaId}, tempId: ${tempId}, ownerId: ${ownerId}, timestamp: ${timestamp}, mime: ${mime}, isReversed: ${isReversed}, isEncrypted: ${isEncrypted}, isPaidToView: ${isPaidToView}, isPaidToOwn: ${isPaidToOwn}, isLocked: ${isLocked}, isSaved: ${isSaved}}';
   }
 }
 
@@ -1237,48 +1424,48 @@ class MediaMetadataBuilder {
     fbBuilder.startTable(11);
   }
 
-  int addTimeIdOffset(int? offset) {
+  int addMediaIdOffset(int? offset) {
     fbBuilder.addOffset(0, offset);
     return fbBuilder.offset;
   }
-  int addOwnerIdOffset(int? offset) {
+  int addTempIdOffset(int? offset) {
     fbBuilder.addOffset(1, offset);
     return fbBuilder.offset;
   }
+  int addOwnerIdOffset(int? offset) {
+    fbBuilder.addOffset(2, offset);
+    return fbBuilder.offset;
+  }
   int addTimestamp(int? timestamp) {
-    fbBuilder.addInt64(2, timestamp);
+    fbBuilder.addInt64(3, timestamp);
     return fbBuilder.offset;
   }
   int addMimeOffset(int? offset) {
-    fbBuilder.addOffset(3, offset);
+    fbBuilder.addOffset(4, offset);
     return fbBuilder.offset;
   }
   int addIsReversed(bool? isReversed) {
-    fbBuilder.addBool(4, isReversed);
+    fbBuilder.addBool(5, isReversed);
     return fbBuilder.offset;
   }
   int addIsEncrypted(bool? isEncrypted) {
-    fbBuilder.addBool(5, isEncrypted);
+    fbBuilder.addBool(6, isEncrypted);
     return fbBuilder.offset;
   }
   int addIsPaidToView(bool? isPaidToView) {
-    fbBuilder.addBool(6, isPaidToView);
+    fbBuilder.addBool(7, isPaidToView);
     return fbBuilder.offset;
   }
   int addIsPaidToOwn(bool? isPaidToOwn) {
-    fbBuilder.addBool(7, isPaidToOwn);
+    fbBuilder.addBool(8, isPaidToOwn);
     return fbBuilder.offset;
   }
   int addIsLocked(bool? isLocked) {
-    fbBuilder.addBool(8, isLocked);
+    fbBuilder.addBool(9, isLocked);
     return fbBuilder.offset;
   }
   int addIsSaved(bool? isSaved) {
-    fbBuilder.addBool(9, isSaved);
-    return fbBuilder.offset;
-  }
-  int addTempOffset(int? offset) {
-    fbBuilder.addOffset(10, offset);
+    fbBuilder.addBool(10, isSaved);
     return fbBuilder.offset;
   }
 
@@ -1288,7 +1475,8 @@ class MediaMetadataBuilder {
 }
 
 class MediaMetadataObjectBuilder extends fb.ObjectBuilder {
-  final String? _timeId;
+  final MediaIdObjectBuilder? _mediaId;
+  final TempIdObjectBuilder? _tempId;
   final String? _ownerId;
   final int? _timestamp;
   final String? _mime;
@@ -1298,10 +1486,10 @@ class MediaMetadataObjectBuilder extends fb.ObjectBuilder {
   final bool? _isPaidToOwn;
   final bool? _isLocked;
   final bool? _isSaved;
-  final String? _temp;
 
   MediaMetadataObjectBuilder({
-    String? timeId,
+    MediaIdObjectBuilder? mediaId,
+    TempIdObjectBuilder? tempId,
     String? ownerId,
     int? timestamp,
     String? mime,
@@ -1311,9 +1499,9 @@ class MediaMetadataObjectBuilder extends fb.ObjectBuilder {
     bool? isPaidToOwn,
     bool? isLocked,
     bool? isSaved,
-    String? temp,
   })
-      : _timeId = timeId,
+      : _mediaId = mediaId,
+        _tempId = tempId,
         _ownerId = ownerId,
         _timestamp = timestamp,
         _mime = mime,
@@ -1322,32 +1510,29 @@ class MediaMetadataObjectBuilder extends fb.ObjectBuilder {
         _isPaidToView = isPaidToView,
         _isPaidToOwn = isPaidToOwn,
         _isLocked = isLocked,
-        _isSaved = isSaved,
-        _temp = temp;
+        _isSaved = isSaved;
 
   /// Finish building, and store into the [fbBuilder].
   @override
   int finish(fb.Builder fbBuilder) {
-    final int? timeIdOffset = _timeId == null ? null
-        : fbBuilder.writeString(_timeId!);
+    final int? mediaIdOffset = _mediaId?.getOrCreateOffset(fbBuilder);
+    final int? tempIdOffset = _tempId?.getOrCreateOffset(fbBuilder);
     final int? ownerIdOffset = _ownerId == null ? null
         : fbBuilder.writeString(_ownerId!);
     final int? mimeOffset = _mime == null ? null
         : fbBuilder.writeString(_mime!);
-    final int? tempOffset = _temp == null ? null
-        : fbBuilder.writeString(_temp!);
     fbBuilder.startTable(11);
-    fbBuilder.addOffset(0, timeIdOffset);
-    fbBuilder.addOffset(1, ownerIdOffset);
-    fbBuilder.addInt64(2, _timestamp);
-    fbBuilder.addOffset(3, mimeOffset);
-    fbBuilder.addBool(4, _isReversed);
-    fbBuilder.addBool(5, _isEncrypted);
-    fbBuilder.addBool(6, _isPaidToView);
-    fbBuilder.addBool(7, _isPaidToOwn);
-    fbBuilder.addBool(8, _isLocked);
-    fbBuilder.addBool(9, _isSaved);
-    fbBuilder.addOffset(10, tempOffset);
+    fbBuilder.addOffset(0, mediaIdOffset);
+    fbBuilder.addOffset(1, tempIdOffset);
+    fbBuilder.addOffset(2, ownerIdOffset);
+    fbBuilder.addInt64(3, _timestamp);
+    fbBuilder.addOffset(4, mimeOffset);
+    fbBuilder.addBool(5, _isReversed);
+    fbBuilder.addBool(6, _isEncrypted);
+    fbBuilder.addBool(7, _isPaidToView);
+    fbBuilder.addBool(8, _isPaidToOwn);
+    fbBuilder.addBool(9, _isLocked);
+    fbBuilder.addBool(10, _isSaved);
     return fbBuilder.endTable();
   }
 
