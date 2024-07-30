@@ -322,6 +322,134 @@ class MediaIdObjectBuilder extends fb.ObjectBuilder {
     return fbBuilder.buffer;
   }
 }
+class PaymentRef {
+  PaymentRef._(this._bc, this._bcOffset);
+  factory PaymentRef(List<int> bytes) {
+    final rootRef = fb.BufferContext.fromBytes(bytes);
+    return reader.read(rootRef, 0);
+  }
+
+  static const fb.Reader<PaymentRef> reader = _PaymentRefReader();
+
+  final fb.BufferContext _bc;
+  final int _bcOffset;
+
+  int get timestamp => const fb.Int64Reader().vTableGet(_bc, _bcOffset, 4, 0);
+  List<int>? get paymentIdRaw => const fb.Uint8ListReader().vTableGetNullable(_bc, _bcOffset, 6);
+  int get kind => const fb.Uint8Reader().vTableGet(_bc, _bcOffset, 8, 0);
+
+  @override
+  String toString() {
+    return 'PaymentRef{timestamp: ${timestamp}, paymentIdRaw: ${paymentIdRaw}, kind: ${kind}}';
+  }
+
+  PaymentRefT unpack() => PaymentRefT(
+      timestamp: timestamp,
+      paymentIdRaw: const fb.Uint8ListReader(lazy: false).vTableGetNullable(_bc, _bcOffset, 6),
+      kind: kind);
+
+  static int pack(fb.Builder fbBuilder, PaymentRefT? object) {
+    if (object == null) return 0;
+    return object.pack(fbBuilder);
+  }
+}
+
+class PaymentRefT implements fb.Packable {
+  int timestamp;
+  List<int>? paymentIdRaw;
+  int kind;
+
+  PaymentRefT({
+      this.timestamp = 0,
+      this.paymentIdRaw,
+      this.kind = 0});
+
+  @override
+  int pack(fb.Builder fbBuilder) {
+    final int? paymentIdRawOffset = paymentIdRaw == null ? null
+        : fbBuilder.writeListUint8(paymentIdRaw!);
+    fbBuilder.startTable(3);
+    fbBuilder.addInt64(0, timestamp);
+    fbBuilder.addOffset(1, paymentIdRawOffset);
+    fbBuilder.addUint8(2, kind);
+    return fbBuilder.endTable();
+  }
+
+  @override
+  String toString() {
+    return 'PaymentRefT{timestamp: ${timestamp}, paymentIdRaw: ${paymentIdRaw}, kind: ${kind}}';
+  }
+}
+
+class _PaymentRefReader extends fb.TableReader<PaymentRef> {
+  const _PaymentRefReader();
+
+  @override
+  PaymentRef createObject(fb.BufferContext bc, int offset) => 
+    PaymentRef._(bc, offset);
+}
+
+class PaymentRefBuilder {
+  PaymentRefBuilder(this.fbBuilder);
+
+  final fb.Builder fbBuilder;
+
+  void begin() {
+    fbBuilder.startTable(3);
+  }
+
+  int addTimestamp(int? timestamp) {
+    fbBuilder.addInt64(0, timestamp);
+    return fbBuilder.offset;
+  }
+  int addPaymentIdRawOffset(int? offset) {
+    fbBuilder.addOffset(1, offset);
+    return fbBuilder.offset;
+  }
+  int addKind(int? kind) {
+    fbBuilder.addUint8(2, kind);
+    return fbBuilder.offset;
+  }
+
+  int finish() {
+    return fbBuilder.endTable();
+  }
+}
+
+class PaymentRefObjectBuilder extends fb.ObjectBuilder {
+  final int? _timestamp;
+  final List<int>? _paymentIdRaw;
+  final int? _kind;
+
+  PaymentRefObjectBuilder({
+    int? timestamp,
+    List<int>? paymentIdRaw,
+    int? kind,
+  })
+      : _timestamp = timestamp,
+        _paymentIdRaw = paymentIdRaw,
+        _kind = kind;
+
+  /// Finish building, and store into the [fbBuilder].
+  @override
+  int finish(fb.Builder fbBuilder) {
+    final int? paymentIdRawOffset = _paymentIdRaw == null ? null
+        : fbBuilder.writeListUint8(_paymentIdRaw!);
+    fbBuilder.startTable(3);
+    fbBuilder.addInt64(0, _timestamp);
+    fbBuilder.addOffset(1, paymentIdRawOffset);
+    fbBuilder.addUint8(2, _kind);
+    return fbBuilder.endTable();
+  }
+
+  /// Convenience method to serialize to byte list.
+  @override
+  Uint8List toBytes([String? fileIdentifier]) {
+    final fbBuilder = fb.Builder(deduplicateTables: false);
+    fbBuilder.finish(finish(fbBuilder), fileIdentifier);
+    return fbBuilder.buffer;
+  }
+}
 class MediaRef {
   MediaRef._(this._bc, this._bcOffset);
   factory MediaRef(List<int> bytes) {
@@ -337,19 +465,19 @@ class MediaRef {
   int get timestamp => const fb.Int64Reader().vTableGet(_bc, _bcOffset, 4, 0);
   int get place => const fb.Uint16Reader().vTableGet(_bc, _bcOffset, 6, 0);
   MediaId? get mediaId => MediaId.reader.vTableGetNullable(_bc, _bcOffset, 8);
-  bool get temporary => const fb.BoolReader().vTableGet(_bc, _bcOffset, 10, false);
+  bool get permanent => const fb.BoolReader().vTableGet(_bc, _bcOffset, 10, false);
   int get kind => const fb.Uint8Reader().vTableGet(_bc, _bcOffset, 12, 0);
 
   @override
   String toString() {
-    return 'MediaRef{timestamp: ${timestamp}, place: ${place}, mediaId: ${mediaId}, temporary: ${temporary}, kind: ${kind}}';
+    return 'MediaRef{timestamp: ${timestamp}, place: ${place}, mediaId: ${mediaId}, permanent: ${permanent}, kind: ${kind}}';
   }
 
   MediaRefT unpack() => MediaRefT(
       timestamp: timestamp,
       place: place,
       mediaId: mediaId?.unpack(),
-      temporary: temporary,
+      permanent: permanent,
       kind: kind);
 
   static int pack(fb.Builder fbBuilder, MediaRefT? object) {
@@ -362,14 +490,14 @@ class MediaRefT implements fb.Packable {
   int timestamp;
   int place;
   MediaIdT? mediaId;
-  bool temporary;
+  bool permanent;
   int kind;
 
   MediaRefT({
       this.timestamp = 0,
       this.place = 0,
       this.mediaId,
-      this.temporary = false,
+      this.permanent = false,
       this.kind = 0});
 
   @override
@@ -379,14 +507,14 @@ class MediaRefT implements fb.Packable {
     fbBuilder.addInt64(0, timestamp);
     fbBuilder.addUint16(1, place);
     fbBuilder.addOffset(2, mediaIdOffset);
-    fbBuilder.addBool(3, temporary);
+    fbBuilder.addBool(3, permanent);
     fbBuilder.addUint8(4, kind);
     return fbBuilder.endTable();
   }
 
   @override
   String toString() {
-    return 'MediaRefT{timestamp: ${timestamp}, place: ${place}, mediaId: ${mediaId}, temporary: ${temporary}, kind: ${kind}}';
+    return 'MediaRefT{timestamp: ${timestamp}, place: ${place}, mediaId: ${mediaId}, permanent: ${permanent}, kind: ${kind}}';
   }
 }
 
@@ -419,8 +547,8 @@ class MediaRefBuilder {
     fbBuilder.addOffset(2, offset);
     return fbBuilder.offset;
   }
-  int addTemporary(bool? temporary) {
-    fbBuilder.addBool(3, temporary);
+  int addPermanent(bool? permanent) {
+    fbBuilder.addBool(3, permanent);
     return fbBuilder.offset;
   }
   int addKind(int? kind) {
@@ -437,20 +565,20 @@ class MediaRefObjectBuilder extends fb.ObjectBuilder {
   final int? _timestamp;
   final int? _place;
   final MediaIdObjectBuilder? _mediaId;
-  final bool? _temporary;
+  final bool? _permanent;
   final int? _kind;
 
   MediaRefObjectBuilder({
     int? timestamp,
     int? place,
     MediaIdObjectBuilder? mediaId,
-    bool? temporary,
+    bool? permanent,
     int? kind,
   })
       : _timestamp = timestamp,
         _place = place,
         _mediaId = mediaId,
-        _temporary = temporary,
+        _permanent = permanent,
         _kind = kind;
 
   /// Finish building, and store into the [fbBuilder].
@@ -461,7 +589,7 @@ class MediaRefObjectBuilder extends fb.ObjectBuilder {
     fbBuilder.addInt64(0, _timestamp);
     fbBuilder.addUint16(1, _place);
     fbBuilder.addOffset(2, mediaIdOffset);
-    fbBuilder.addBool(3, _temporary);
+    fbBuilder.addBool(3, _permanent);
     fbBuilder.addUint8(4, _kind);
     return fbBuilder.endTable();
   }
@@ -1456,25 +1584,23 @@ class MediaMetadata {
   final int _bcOffset;
 
   MediaId? get mediaId => MediaId.reader.vTableGetNullable(_bc, _bcOffset, 4);
-  MediaRef? get tempId => MediaRef.reader.vTableGetNullable(_bc, _bcOffset, 6);
-  String? get ownerId => const fb.StringReader().vTableGetNullable(_bc, _bcOffset, 8);
-  int get timestamp => const fb.Int64Reader().vTableGet(_bc, _bcOffset, 10, 0);
-  String? get mime => const fb.StringReader().vTableGetNullable(_bc, _bcOffset, 12);
-  bool get isReversed => const fb.BoolReader().vTableGet(_bc, _bcOffset, 14, false);
-  bool get isEncrypted => const fb.BoolReader().vTableGet(_bc, _bcOffset, 16, false);
-  bool get isPaidToView => const fb.BoolReader().vTableGet(_bc, _bcOffset, 18, false);
-  bool get isPaidToOwn => const fb.BoolReader().vTableGet(_bc, _bcOffset, 20, false);
-  bool get isLocked => const fb.BoolReader().vTableGet(_bc, _bcOffset, 22, false);
-  bool get isSaved => const fb.BoolReader().vTableGet(_bc, _bcOffset, 24, false);
+  String? get ownerId => const fb.StringReader().vTableGetNullable(_bc, _bcOffset, 6);
+  int get timestamp => const fb.Int64Reader().vTableGet(_bc, _bcOffset, 8, 0);
+  String? get mime => const fb.StringReader().vTableGetNullable(_bc, _bcOffset, 10);
+  bool get isReversed => const fb.BoolReader().vTableGet(_bc, _bcOffset, 12, false);
+  bool get isEncrypted => const fb.BoolReader().vTableGet(_bc, _bcOffset, 14, false);
+  bool get isPaidToView => const fb.BoolReader().vTableGet(_bc, _bcOffset, 16, false);
+  bool get isPaidToOwn => const fb.BoolReader().vTableGet(_bc, _bcOffset, 18, false);
+  bool get isLocked => const fb.BoolReader().vTableGet(_bc, _bcOffset, 20, false);
+  bool get isSaved => const fb.BoolReader().vTableGet(_bc, _bcOffset, 22, false);
 
   @override
   String toString() {
-    return 'MediaMetadata{mediaId: ${mediaId}, tempId: ${tempId}, ownerId: ${ownerId}, timestamp: ${timestamp}, mime: ${mime}, isReversed: ${isReversed}, isEncrypted: ${isEncrypted}, isPaidToView: ${isPaidToView}, isPaidToOwn: ${isPaidToOwn}, isLocked: ${isLocked}, isSaved: ${isSaved}}';
+    return 'MediaMetadata{mediaId: ${mediaId}, ownerId: ${ownerId}, timestamp: ${timestamp}, mime: ${mime}, isReversed: ${isReversed}, isEncrypted: ${isEncrypted}, isPaidToView: ${isPaidToView}, isPaidToOwn: ${isPaidToOwn}, isLocked: ${isLocked}, isSaved: ${isSaved}}';
   }
 
   MediaMetadataT unpack() => MediaMetadataT(
       mediaId: mediaId?.unpack(),
-      tempId: tempId?.unpack(),
       ownerId: ownerId,
       timestamp: timestamp,
       mime: mime,
@@ -1493,7 +1619,6 @@ class MediaMetadata {
 
 class MediaMetadataT implements fb.Packable {
   MediaIdT? mediaId;
-  MediaRefT? tempId;
   String? ownerId;
   int timestamp;
   String? mime;
@@ -1506,7 +1631,6 @@ class MediaMetadataT implements fb.Packable {
 
   MediaMetadataT({
       this.mediaId,
-      this.tempId,
       this.ownerId,
       this.timestamp = 0,
       this.mime,
@@ -1520,29 +1644,27 @@ class MediaMetadataT implements fb.Packable {
   @override
   int pack(fb.Builder fbBuilder) {
     final int? mediaIdOffset = mediaId?.pack(fbBuilder);
-    final int? tempIdOffset = tempId?.pack(fbBuilder);
     final int? ownerIdOffset = ownerId == null ? null
         : fbBuilder.writeString(ownerId!);
     final int? mimeOffset = mime == null ? null
         : fbBuilder.writeString(mime!);
-    fbBuilder.startTable(11);
+    fbBuilder.startTable(10);
     fbBuilder.addOffset(0, mediaIdOffset);
-    fbBuilder.addOffset(1, tempIdOffset);
-    fbBuilder.addOffset(2, ownerIdOffset);
-    fbBuilder.addInt64(3, timestamp);
-    fbBuilder.addOffset(4, mimeOffset);
-    fbBuilder.addBool(5, isReversed);
-    fbBuilder.addBool(6, isEncrypted);
-    fbBuilder.addBool(7, isPaidToView);
-    fbBuilder.addBool(8, isPaidToOwn);
-    fbBuilder.addBool(9, isLocked);
-    fbBuilder.addBool(10, isSaved);
+    fbBuilder.addOffset(1, ownerIdOffset);
+    fbBuilder.addInt64(2, timestamp);
+    fbBuilder.addOffset(3, mimeOffset);
+    fbBuilder.addBool(4, isReversed);
+    fbBuilder.addBool(5, isEncrypted);
+    fbBuilder.addBool(6, isPaidToView);
+    fbBuilder.addBool(7, isPaidToOwn);
+    fbBuilder.addBool(8, isLocked);
+    fbBuilder.addBool(9, isSaved);
     return fbBuilder.endTable();
   }
 
   @override
   String toString() {
-    return 'MediaMetadataT{mediaId: ${mediaId}, tempId: ${tempId}, ownerId: ${ownerId}, timestamp: ${timestamp}, mime: ${mime}, isReversed: ${isReversed}, isEncrypted: ${isEncrypted}, isPaidToView: ${isPaidToView}, isPaidToOwn: ${isPaidToOwn}, isLocked: ${isLocked}, isSaved: ${isSaved}}';
+    return 'MediaMetadataT{mediaId: ${mediaId}, ownerId: ${ownerId}, timestamp: ${timestamp}, mime: ${mime}, isReversed: ${isReversed}, isEncrypted: ${isEncrypted}, isPaidToView: ${isPaidToView}, isPaidToOwn: ${isPaidToOwn}, isLocked: ${isLocked}, isSaved: ${isSaved}}';
   }
 }
 
@@ -1560,51 +1682,47 @@ class MediaMetadataBuilder {
   final fb.Builder fbBuilder;
 
   void begin() {
-    fbBuilder.startTable(11);
+    fbBuilder.startTable(10);
   }
 
   int addMediaIdOffset(int? offset) {
     fbBuilder.addOffset(0, offset);
     return fbBuilder.offset;
   }
-  int addTempIdOffset(int? offset) {
+  int addOwnerIdOffset(int? offset) {
     fbBuilder.addOffset(1, offset);
     return fbBuilder.offset;
   }
-  int addOwnerIdOffset(int? offset) {
-    fbBuilder.addOffset(2, offset);
-    return fbBuilder.offset;
-  }
   int addTimestamp(int? timestamp) {
-    fbBuilder.addInt64(3, timestamp);
+    fbBuilder.addInt64(2, timestamp);
     return fbBuilder.offset;
   }
   int addMimeOffset(int? offset) {
-    fbBuilder.addOffset(4, offset);
+    fbBuilder.addOffset(3, offset);
     return fbBuilder.offset;
   }
   int addIsReversed(bool? isReversed) {
-    fbBuilder.addBool(5, isReversed);
+    fbBuilder.addBool(4, isReversed);
     return fbBuilder.offset;
   }
   int addIsEncrypted(bool? isEncrypted) {
-    fbBuilder.addBool(6, isEncrypted);
+    fbBuilder.addBool(5, isEncrypted);
     return fbBuilder.offset;
   }
   int addIsPaidToView(bool? isPaidToView) {
-    fbBuilder.addBool(7, isPaidToView);
+    fbBuilder.addBool(6, isPaidToView);
     return fbBuilder.offset;
   }
   int addIsPaidToOwn(bool? isPaidToOwn) {
-    fbBuilder.addBool(8, isPaidToOwn);
+    fbBuilder.addBool(7, isPaidToOwn);
     return fbBuilder.offset;
   }
   int addIsLocked(bool? isLocked) {
-    fbBuilder.addBool(9, isLocked);
+    fbBuilder.addBool(8, isLocked);
     return fbBuilder.offset;
   }
   int addIsSaved(bool? isSaved) {
-    fbBuilder.addBool(10, isSaved);
+    fbBuilder.addBool(9, isSaved);
     return fbBuilder.offset;
   }
 
@@ -1615,7 +1733,6 @@ class MediaMetadataBuilder {
 
 class MediaMetadataObjectBuilder extends fb.ObjectBuilder {
   final MediaIdObjectBuilder? _mediaId;
-  final MediaRefObjectBuilder? _tempId;
   final String? _ownerId;
   final int? _timestamp;
   final String? _mime;
@@ -1628,7 +1745,6 @@ class MediaMetadataObjectBuilder extends fb.ObjectBuilder {
 
   MediaMetadataObjectBuilder({
     MediaIdObjectBuilder? mediaId,
-    MediaRefObjectBuilder? tempId,
     String? ownerId,
     int? timestamp,
     String? mime,
@@ -1640,7 +1756,6 @@ class MediaMetadataObjectBuilder extends fb.ObjectBuilder {
     bool? isSaved,
   })
       : _mediaId = mediaId,
-        _tempId = tempId,
         _ownerId = ownerId,
         _timestamp = timestamp,
         _mime = mime,
@@ -1655,23 +1770,21 @@ class MediaMetadataObjectBuilder extends fb.ObjectBuilder {
   @override
   int finish(fb.Builder fbBuilder) {
     final int? mediaIdOffset = _mediaId?.getOrCreateOffset(fbBuilder);
-    final int? tempIdOffset = _tempId?.getOrCreateOffset(fbBuilder);
     final int? ownerIdOffset = _ownerId == null ? null
         : fbBuilder.writeString(_ownerId!);
     final int? mimeOffset = _mime == null ? null
         : fbBuilder.writeString(_mime!);
-    fbBuilder.startTable(11);
+    fbBuilder.startTable(10);
     fbBuilder.addOffset(0, mediaIdOffset);
-    fbBuilder.addOffset(1, tempIdOffset);
-    fbBuilder.addOffset(2, ownerIdOffset);
-    fbBuilder.addInt64(3, _timestamp);
-    fbBuilder.addOffset(4, mimeOffset);
-    fbBuilder.addBool(5, _isReversed);
-    fbBuilder.addBool(6, _isEncrypted);
-    fbBuilder.addBool(7, _isPaidToView);
-    fbBuilder.addBool(8, _isPaidToOwn);
-    fbBuilder.addBool(9, _isLocked);
-    fbBuilder.addBool(10, _isSaved);
+    fbBuilder.addOffset(1, ownerIdOffset);
+    fbBuilder.addInt64(2, _timestamp);
+    fbBuilder.addOffset(3, mimeOffset);
+    fbBuilder.addBool(4, _isReversed);
+    fbBuilder.addBool(5, _isEncrypted);
+    fbBuilder.addBool(6, _isPaidToView);
+    fbBuilder.addBool(7, _isPaidToOwn);
+    fbBuilder.addBool(8, _isLocked);
+    fbBuilder.addBool(9, _isSaved);
     return fbBuilder.endTable();
   }
 
@@ -2117,19 +2230,18 @@ class MessageEvent {
   int get timestamp => const fb.Uint64Reader().vTableGet(_bc, _bcOffset, 20, 0);
   String? get forwardedFrom => const fb.StringReader().vTableGetNullable(_bc, _bcOffset, 22);
   String? get forwardedFromTag => const fb.StringReader().vTableGetNullable(_bc, _bcOffset, 24);
-  String? get paymentId => const fb.StringReader().vTableGetNullable(_bc, _bcOffset, 26);
-  List<String>? get nodes => const fb.ListReader<String>(fb.StringReader()).vTableGetNullable(_bc, _bcOffset, 28);
-  List<String>? get replies => const fb.ListReader<String>(fb.StringReader()).vTableGetNullable(_bc, _bcOffset, 30);
-  String? get txt => const fb.StringReader().vTableGetNullable(_bc, _bcOffset, 32);
-  MediaRef? get mediaRef => MediaRef.reader.vTableGetNullable(_bc, _bcOffset, 34);
-  MediaRef? get paymentRef => MediaRef.reader.vTableGetNullable(_bc, _bcOffset, 36);
-  String? get emoji => const fb.StringReader().vTableGetNullable(_bc, _bcOffset, 38);
-  List<Sticker>? get sticks => const fb.ListReader<Sticker>(Sticker.reader).vTableGetNullable(_bc, _bcOffset, 40);
-  Offset? get snipSize => Offset.reader.vTableGetNullable(_bc, _bcOffset, 42);
+  List<String>? get nodes => const fb.ListReader<String>(fb.StringReader()).vTableGetNullable(_bc, _bcOffset, 26);
+  List<String>? get replies => const fb.ListReader<String>(fb.StringReader()).vTableGetNullable(_bc, _bcOffset, 28);
+  String? get txt => const fb.StringReader().vTableGetNullable(_bc, _bcOffset, 30);
+  MediaRef? get mediaRef => MediaRef.reader.vTableGetNullable(_bc, _bcOffset, 32);
+  PaymentRef? get paymentRef => PaymentRef.reader.vTableGetNullable(_bc, _bcOffset, 34);
+  String? get emoji => const fb.StringReader().vTableGetNullable(_bc, _bcOffset, 36);
+  List<Sticker>? get sticks => const fb.ListReader<Sticker>(Sticker.reader).vTableGetNullable(_bc, _bcOffset, 38);
+  Offset? get snipSize => Offset.reader.vTableGetNullable(_bc, _bcOffset, 40);
 
   @override
   String toString() {
-    return 'MessageEvent{chatId: ${chatId}, type: ${type}, reactionId: ${reactionId}, senderId: ${senderId}, senderTag: ${senderTag}, messageId: ${messageId}, root: ${root}, tag: ${tag}, timestamp: ${timestamp}, forwardedFrom: ${forwardedFrom}, forwardedFromTag: ${forwardedFromTag}, paymentId: ${paymentId}, nodes: ${nodes}, replies: ${replies}, txt: ${txt}, mediaRef: ${mediaRef}, paymentRef: ${paymentRef}, emoji: ${emoji}, sticks: ${sticks}, snipSize: ${snipSize}}';
+    return 'MessageEvent{chatId: ${chatId}, type: ${type}, reactionId: ${reactionId}, senderId: ${senderId}, senderTag: ${senderTag}, messageId: ${messageId}, root: ${root}, tag: ${tag}, timestamp: ${timestamp}, forwardedFrom: ${forwardedFrom}, forwardedFromTag: ${forwardedFromTag}, nodes: ${nodes}, replies: ${replies}, txt: ${txt}, mediaRef: ${mediaRef}, paymentRef: ${paymentRef}, emoji: ${emoji}, sticks: ${sticks}, snipSize: ${snipSize}}';
   }
 
   MessageEventT unpack() => MessageEventT(
@@ -2144,9 +2256,8 @@ class MessageEvent {
       timestamp: timestamp,
       forwardedFrom: forwardedFrom,
       forwardedFromTag: forwardedFromTag,
-      paymentId: paymentId,
-      nodes: const fb.ListReader<String>(fb.StringReader(), lazy: false).vTableGetNullable(_bc, _bcOffset, 28),
-      replies: const fb.ListReader<String>(fb.StringReader(), lazy: false).vTableGetNullable(_bc, _bcOffset, 30),
+      nodes: const fb.ListReader<String>(fb.StringReader(), lazy: false).vTableGetNullable(_bc, _bcOffset, 26),
+      replies: const fb.ListReader<String>(fb.StringReader(), lazy: false).vTableGetNullable(_bc, _bcOffset, 28),
       txt: txt,
       mediaRef: mediaRef?.unpack(),
       paymentRef: paymentRef?.unpack(),
@@ -2172,12 +2283,11 @@ class MessageEventT implements fb.Packable {
   int timestamp;
   String? forwardedFrom;
   String? forwardedFromTag;
-  String? paymentId;
   List<String>? nodes;
   List<String>? replies;
   String? txt;
   MediaRefT? mediaRef;
-  MediaRefT? paymentRef;
+  PaymentRefT? paymentRef;
   String? emoji;
   List<StickerT>? sticks;
   OffsetT? snipSize;
@@ -2194,7 +2304,6 @@ class MessageEventT implements fb.Packable {
       this.timestamp = 0,
       this.forwardedFrom,
       this.forwardedFromTag,
-      this.paymentId,
       this.nodes,
       this.replies,
       this.txt,
@@ -2223,8 +2332,6 @@ class MessageEventT implements fb.Packable {
         : fbBuilder.writeString(forwardedFrom!);
     final int? forwardedFromTagOffset = forwardedFromTag == null ? null
         : fbBuilder.writeString(forwardedFromTag!);
-    final int? paymentIdOffset = paymentId == null ? null
-        : fbBuilder.writeString(paymentId!);
     final int? nodesOffset = nodes == null ? null
         : fbBuilder.writeList(nodes!.map(fbBuilder.writeString).toList());
     final int? repliesOffset = replies == null ? null
@@ -2237,7 +2344,7 @@ class MessageEventT implements fb.Packable {
         : fbBuilder.writeString(emoji!);
     final int? sticksOffset = sticks == null ? null
         : fbBuilder.writeList(sticks!.map((b) => b.pack(fbBuilder)).toList());
-    fbBuilder.startTable(20);
+    fbBuilder.startTable(19);
     fbBuilder.addOffset(0, chatIdOffset);
     fbBuilder.addUint8(1, type);
     fbBuilder.addOffset(2, reactionIdOffset);
@@ -2249,23 +2356,22 @@ class MessageEventT implements fb.Packable {
     fbBuilder.addUint64(8, timestamp);
     fbBuilder.addOffset(9, forwardedFromOffset);
     fbBuilder.addOffset(10, forwardedFromTagOffset);
-    fbBuilder.addOffset(11, paymentIdOffset);
-    fbBuilder.addOffset(12, nodesOffset);
-    fbBuilder.addOffset(13, repliesOffset);
-    fbBuilder.addOffset(14, txtOffset);
-    fbBuilder.addOffset(15, mediaRefOffset);
-    fbBuilder.addOffset(16, paymentRefOffset);
-    fbBuilder.addOffset(17, emojiOffset);
-    fbBuilder.addOffset(18, sticksOffset);
+    fbBuilder.addOffset(11, nodesOffset);
+    fbBuilder.addOffset(12, repliesOffset);
+    fbBuilder.addOffset(13, txtOffset);
+    fbBuilder.addOffset(14, mediaRefOffset);
+    fbBuilder.addOffset(15, paymentRefOffset);
+    fbBuilder.addOffset(16, emojiOffset);
+    fbBuilder.addOffset(17, sticksOffset);
     if (snipSize != null) {
-      fbBuilder.addStruct(19, snipSize!.pack(fbBuilder));
+      fbBuilder.addStruct(18, snipSize!.pack(fbBuilder));
     }
     return fbBuilder.endTable();
   }
 
   @override
   String toString() {
-    return 'MessageEventT{chatId: ${chatId}, type: ${type}, reactionId: ${reactionId}, senderId: ${senderId}, senderTag: ${senderTag}, messageId: ${messageId}, root: ${root}, tag: ${tag}, timestamp: ${timestamp}, forwardedFrom: ${forwardedFrom}, forwardedFromTag: ${forwardedFromTag}, paymentId: ${paymentId}, nodes: ${nodes}, replies: ${replies}, txt: ${txt}, mediaRef: ${mediaRef}, paymentRef: ${paymentRef}, emoji: ${emoji}, sticks: ${sticks}, snipSize: ${snipSize}}';
+    return 'MessageEventT{chatId: ${chatId}, type: ${type}, reactionId: ${reactionId}, senderId: ${senderId}, senderTag: ${senderTag}, messageId: ${messageId}, root: ${root}, tag: ${tag}, timestamp: ${timestamp}, forwardedFrom: ${forwardedFrom}, forwardedFromTag: ${forwardedFromTag}, nodes: ${nodes}, replies: ${replies}, txt: ${txt}, mediaRef: ${mediaRef}, paymentRef: ${paymentRef}, emoji: ${emoji}, sticks: ${sticks}, snipSize: ${snipSize}}';
   }
 }
 
@@ -2283,7 +2389,7 @@ class MessageEventBuilder {
   final fb.Builder fbBuilder;
 
   void begin() {
-    fbBuilder.startTable(20);
+    fbBuilder.startTable(19);
   }
 
   int addChatIdOffset(int? offset) {
@@ -2330,40 +2436,36 @@ class MessageEventBuilder {
     fbBuilder.addOffset(10, offset);
     return fbBuilder.offset;
   }
-  int addPaymentIdOffset(int? offset) {
+  int addNodesOffset(int? offset) {
     fbBuilder.addOffset(11, offset);
     return fbBuilder.offset;
   }
-  int addNodesOffset(int? offset) {
+  int addRepliesOffset(int? offset) {
     fbBuilder.addOffset(12, offset);
     return fbBuilder.offset;
   }
-  int addRepliesOffset(int? offset) {
+  int addTxtOffset(int? offset) {
     fbBuilder.addOffset(13, offset);
     return fbBuilder.offset;
   }
-  int addTxtOffset(int? offset) {
+  int addMediaRefOffset(int? offset) {
     fbBuilder.addOffset(14, offset);
     return fbBuilder.offset;
   }
-  int addMediaRefOffset(int? offset) {
+  int addPaymentRefOffset(int? offset) {
     fbBuilder.addOffset(15, offset);
     return fbBuilder.offset;
   }
-  int addPaymentRefOffset(int? offset) {
+  int addEmojiOffset(int? offset) {
     fbBuilder.addOffset(16, offset);
     return fbBuilder.offset;
   }
-  int addEmojiOffset(int? offset) {
+  int addSticksOffset(int? offset) {
     fbBuilder.addOffset(17, offset);
     return fbBuilder.offset;
   }
-  int addSticksOffset(int? offset) {
-    fbBuilder.addOffset(18, offset);
-    return fbBuilder.offset;
-  }
   int addSnipSize(int offset) {
-    fbBuilder.addStruct(19, offset);
+    fbBuilder.addStruct(18, offset);
     return fbBuilder.offset;
   }
 
@@ -2384,12 +2486,11 @@ class MessageEventObjectBuilder extends fb.ObjectBuilder {
   final int? _timestamp;
   final String? _forwardedFrom;
   final String? _forwardedFromTag;
-  final String? _paymentId;
   final List<String>? _nodes;
   final List<String>? _replies;
   final String? _txt;
   final MediaRefObjectBuilder? _mediaRef;
-  final MediaRefObjectBuilder? _paymentRef;
+  final PaymentRefObjectBuilder? _paymentRef;
   final String? _emoji;
   final List<StickerObjectBuilder>? _sticks;
   final OffsetObjectBuilder? _snipSize;
@@ -2406,12 +2507,11 @@ class MessageEventObjectBuilder extends fb.ObjectBuilder {
     int? timestamp,
     String? forwardedFrom,
     String? forwardedFromTag,
-    String? paymentId,
     List<String>? nodes,
     List<String>? replies,
     String? txt,
     MediaRefObjectBuilder? mediaRef,
-    MediaRefObjectBuilder? paymentRef,
+    PaymentRefObjectBuilder? paymentRef,
     String? emoji,
     List<StickerObjectBuilder>? sticks,
     OffsetObjectBuilder? snipSize,
@@ -2427,7 +2527,6 @@ class MessageEventObjectBuilder extends fb.ObjectBuilder {
         _timestamp = timestamp,
         _forwardedFrom = forwardedFrom,
         _forwardedFromTag = forwardedFromTag,
-        _paymentId = paymentId,
         _nodes = nodes,
         _replies = replies,
         _txt = txt,
@@ -2457,8 +2556,6 @@ class MessageEventObjectBuilder extends fb.ObjectBuilder {
         : fbBuilder.writeString(_forwardedFrom!);
     final int? forwardedFromTagOffset = _forwardedFromTag == null ? null
         : fbBuilder.writeString(_forwardedFromTag!);
-    final int? paymentIdOffset = _paymentId == null ? null
-        : fbBuilder.writeString(_paymentId!);
     final int? nodesOffset = _nodes == null ? null
         : fbBuilder.writeList(_nodes!.map(fbBuilder.writeString).toList());
     final int? repliesOffset = _replies == null ? null
@@ -2471,7 +2568,7 @@ class MessageEventObjectBuilder extends fb.ObjectBuilder {
         : fbBuilder.writeString(_emoji!);
     final int? sticksOffset = _sticks == null ? null
         : fbBuilder.writeList(_sticks!.map((b) => b.getOrCreateOffset(fbBuilder)).toList());
-    fbBuilder.startTable(20);
+    fbBuilder.startTable(19);
     fbBuilder.addOffset(0, chatIdOffset);
     fbBuilder.addUint8(1, _type);
     fbBuilder.addOffset(2, reactionIdOffset);
@@ -2483,16 +2580,15 @@ class MessageEventObjectBuilder extends fb.ObjectBuilder {
     fbBuilder.addUint64(8, _timestamp);
     fbBuilder.addOffset(9, forwardedFromOffset);
     fbBuilder.addOffset(10, forwardedFromTagOffset);
-    fbBuilder.addOffset(11, paymentIdOffset);
-    fbBuilder.addOffset(12, nodesOffset);
-    fbBuilder.addOffset(13, repliesOffset);
-    fbBuilder.addOffset(14, txtOffset);
-    fbBuilder.addOffset(15, mediaRefOffset);
-    fbBuilder.addOffset(16, paymentRefOffset);
-    fbBuilder.addOffset(17, emojiOffset);
-    fbBuilder.addOffset(18, sticksOffset);
+    fbBuilder.addOffset(11, nodesOffset);
+    fbBuilder.addOffset(12, repliesOffset);
+    fbBuilder.addOffset(13, txtOffset);
+    fbBuilder.addOffset(14, mediaRefOffset);
+    fbBuilder.addOffset(15, paymentRefOffset);
+    fbBuilder.addOffset(16, emojiOffset);
+    fbBuilder.addOffset(17, sticksOffset);
     if (_snipSize != null) {
-      fbBuilder.addStruct(19, _snipSize!.finish(fbBuilder));
+      fbBuilder.addStruct(18, _snipSize!.finish(fbBuilder));
     }
     return fbBuilder.endTable();
   }
