@@ -19,21 +19,23 @@ class MessageId {
   final fb.BufferContext _bc;
   final int _bcOffset;
 
-  int get timestamp => const fb.Int64Reader().vTableGet(_bc, _bcOffset, 4, 0);
-  int get u32 => const fb.Uint32Reader().vTableGet(_bc, _bcOffset, 6, 0);
-  Root? get root => Root.reader.vTableGetNullable(_bc, _bcOffset, 8);
-  int get kind => const fb.Uint8Reader().vTableGet(_bc, _bcOffset, 10, 0);
+  int get prefix => const fb.Uint8Reader().vTableGet(_bc, _bcOffset, 4, 0);
+  int get timestamp => const fb.Int64Reader().vTableGet(_bc, _bcOffset, 6, 0);
+  int get u32 => const fb.Uint32Reader().vTableGet(_bc, _bcOffset, 8, 0);
+  Root? get root => Root.reader.vTableGetNullable(_bc, _bcOffset, 10);
+  int get suffix => const fb.Uint8Reader().vTableGet(_bc, _bcOffset, 12, 0);
 
   @override
   String toString() {
-    return 'MessageId{timestamp: ${timestamp}, u32: ${u32}, root: ${root}, kind: ${kind}}';
+    return 'MessageId{prefix: ${prefix}, timestamp: ${timestamp}, u32: ${u32}, root: ${root}, suffix: ${suffix}}';
   }
 
   MessageIdT unpack() => MessageIdT(
+      prefix: prefix,
       timestamp: timestamp,
       u32: u32,
       root: root?.unpack(),
-      kind: kind);
+      suffix: suffix);
 
   static int pack(fb.Builder fbBuilder, MessageIdT? object) {
     if (object == null) return 0;
@@ -42,31 +44,34 @@ class MessageId {
 }
 
 class MessageIdT implements fb.Packable {
+  int prefix;
   int timestamp;
   int u32;
   RootT? root;
-  int kind;
+  int suffix;
 
   MessageIdT({
+      this.prefix = 0,
       this.timestamp = 0,
       this.u32 = 0,
       this.root,
-      this.kind = 0});
+      this.suffix = 0});
 
   @override
   int pack(fb.Builder fbBuilder) {
     final int? rootOffset = root?.pack(fbBuilder);
-    fbBuilder.startTable(4);
-    fbBuilder.addInt64(0, timestamp);
-    fbBuilder.addUint32(1, u32);
-    fbBuilder.addOffset(2, rootOffset);
-    fbBuilder.addUint8(3, kind);
+    fbBuilder.startTable(5);
+    fbBuilder.addUint8(0, prefix);
+    fbBuilder.addInt64(1, timestamp);
+    fbBuilder.addUint32(2, u32);
+    fbBuilder.addOffset(3, rootOffset);
+    fbBuilder.addUint8(4, suffix);
     return fbBuilder.endTable();
   }
 
   @override
   String toString() {
-    return 'MessageIdT{timestamp: ${timestamp}, u32: ${u32}, root: ${root}, kind: ${kind}}';
+    return 'MessageIdT{prefix: ${prefix}, timestamp: ${timestamp}, u32: ${u32}, root: ${root}, suffix: ${suffix}}';
   }
 }
 
@@ -84,23 +89,27 @@ class MessageIdBuilder {
   final fb.Builder fbBuilder;
 
   void begin() {
-    fbBuilder.startTable(4);
+    fbBuilder.startTable(5);
   }
 
+  int addPrefix(int? prefix) {
+    fbBuilder.addUint8(0, prefix);
+    return fbBuilder.offset;
+  }
   int addTimestamp(int? timestamp) {
-    fbBuilder.addInt64(0, timestamp);
+    fbBuilder.addInt64(1, timestamp);
     return fbBuilder.offset;
   }
   int addU32(int? u32) {
-    fbBuilder.addUint32(1, u32);
+    fbBuilder.addUint32(2, u32);
     return fbBuilder.offset;
   }
   int addRootOffset(int? offset) {
-    fbBuilder.addOffset(2, offset);
+    fbBuilder.addOffset(3, offset);
     return fbBuilder.offset;
   }
-  int addKind(int? kind) {
-    fbBuilder.addUint8(3, kind);
+  int addSuffix(int? suffix) {
+    fbBuilder.addUint8(4, suffix);
     return fbBuilder.offset;
   }
 
@@ -110,31 +119,35 @@ class MessageIdBuilder {
 }
 
 class MessageIdObjectBuilder extends fb.ObjectBuilder {
+  final int? _prefix;
   final int? _timestamp;
   final int? _u32;
   final RootObjectBuilder? _root;
-  final int? _kind;
+  final int? _suffix;
 
   MessageIdObjectBuilder({
+    int? prefix,
     int? timestamp,
     int? u32,
     RootObjectBuilder? root,
-    int? kind,
+    int? suffix,
   })
-      : _timestamp = timestamp,
+      : _prefix = prefix,
+        _timestamp = timestamp,
         _u32 = u32,
         _root = root,
-        _kind = kind;
+        _suffix = suffix;
 
   /// Finish building, and store into the [fbBuilder].
   @override
   int finish(fb.Builder fbBuilder) {
     final int? rootOffset = _root?.getOrCreateOffset(fbBuilder);
-    fbBuilder.startTable(4);
-    fbBuilder.addInt64(0, _timestamp);
-    fbBuilder.addUint32(1, _u32);
-    fbBuilder.addOffset(2, rootOffset);
-    fbBuilder.addUint8(3, _kind);
+    fbBuilder.startTable(5);
+    fbBuilder.addUint8(0, _prefix);
+    fbBuilder.addInt64(1, _timestamp);
+    fbBuilder.addUint32(2, _u32);
+    fbBuilder.addOffset(3, rootOffset);
+    fbBuilder.addUint8(4, _suffix);
     return fbBuilder.endTable();
   }
 
@@ -164,11 +177,11 @@ class MediaId {
   int get height => const fb.Uint16Reader().vTableGet(_bc, _bcOffset, 10, 0);
   bool get squared => const fb.BoolReader().vTableGet(_bc, _bcOffset, 12, false);
   bool get video => const fb.BoolReader().vTableGet(_bc, _bcOffset, 14, false);
-  int get kind => const fb.Uint8Reader().vTableGet(_bc, _bcOffset, 16, 0);
+  int get prefix => const fb.Uint8Reader().vTableGet(_bc, _bcOffset, 16, 0);
 
   @override
   String toString() {
-    return 'MediaId{timestamp: ${timestamp}, u32: ${u32}, width: ${width}, height: ${height}, squared: ${squared}, video: ${video}, kind: ${kind}}';
+    return 'MediaId{timestamp: ${timestamp}, u32: ${u32}, width: ${width}, height: ${height}, squared: ${squared}, video: ${video}, prefix: ${prefix}}';
   }
 
   MediaIdT unpack() => MediaIdT(
@@ -178,7 +191,7 @@ class MediaId {
       height: height,
       squared: squared,
       video: video,
-      kind: kind);
+      prefix: prefix);
 
   static int pack(fb.Builder fbBuilder, MediaIdT? object) {
     if (object == null) return 0;
@@ -193,7 +206,7 @@ class MediaIdT implements fb.Packable {
   int height;
   bool squared;
   bool video;
-  int kind;
+  int prefix;
 
   MediaIdT({
       this.timestamp = 0,
@@ -202,7 +215,7 @@ class MediaIdT implements fb.Packable {
       this.height = 0,
       this.squared = false,
       this.video = false,
-      this.kind = 0});
+      this.prefix = 0});
 
   @override
   int pack(fb.Builder fbBuilder) {
@@ -213,13 +226,13 @@ class MediaIdT implements fb.Packable {
     fbBuilder.addUint16(3, height);
     fbBuilder.addBool(4, squared);
     fbBuilder.addBool(5, video);
-    fbBuilder.addUint8(6, kind);
+    fbBuilder.addUint8(6, prefix);
     return fbBuilder.endTable();
   }
 
   @override
   String toString() {
-    return 'MediaIdT{timestamp: ${timestamp}, u32: ${u32}, width: ${width}, height: ${height}, squared: ${squared}, video: ${video}, kind: ${kind}}';
+    return 'MediaIdT{timestamp: ${timestamp}, u32: ${u32}, width: ${width}, height: ${height}, squared: ${squared}, video: ${video}, prefix: ${prefix}}';
   }
 }
 
@@ -264,8 +277,8 @@ class MediaIdBuilder {
     fbBuilder.addBool(5, video);
     return fbBuilder.offset;
   }
-  int addKind(int? kind) {
-    fbBuilder.addUint8(6, kind);
+  int addPrefix(int? prefix) {
+    fbBuilder.addUint8(6, prefix);
     return fbBuilder.offset;
   }
 
@@ -281,7 +294,7 @@ class MediaIdObjectBuilder extends fb.ObjectBuilder {
   final int? _height;
   final bool? _squared;
   final bool? _video;
-  final int? _kind;
+  final int? _prefix;
 
   MediaIdObjectBuilder({
     int? timestamp,
@@ -290,7 +303,7 @@ class MediaIdObjectBuilder extends fb.ObjectBuilder {
     int? height,
     bool? squared,
     bool? video,
-    int? kind,
+    int? prefix,
   })
       : _timestamp = timestamp,
         _u32 = u32,
@@ -298,7 +311,7 @@ class MediaIdObjectBuilder extends fb.ObjectBuilder {
         _height = height,
         _squared = squared,
         _video = video,
-        _kind = kind;
+        _prefix = prefix;
 
   /// Finish building, and store into the [fbBuilder].
   @override
@@ -310,7 +323,7 @@ class MediaIdObjectBuilder extends fb.ObjectBuilder {
     fbBuilder.addUint16(3, _height);
     fbBuilder.addBool(4, _squared);
     fbBuilder.addBool(5, _video);
-    fbBuilder.addUint8(6, _kind);
+    fbBuilder.addUint8(6, _prefix);
     return fbBuilder.endTable();
   }
 
@@ -336,17 +349,17 @@ class PaymentRef {
 
   int get timestamp => const fb.Int64Reader().vTableGet(_bc, _bcOffset, 4, 0);
   List<int>? get paymentIdRaw => const fb.Uint8ListReader().vTableGetNullable(_bc, _bcOffset, 6);
-  int get kind => const fb.Uint8Reader().vTableGet(_bc, _bcOffset, 8, 0);
+  int get prefix => const fb.Uint8Reader().vTableGet(_bc, _bcOffset, 8, 0);
 
   @override
   String toString() {
-    return 'PaymentRef{timestamp: ${timestamp}, paymentIdRaw: ${paymentIdRaw}, kind: ${kind}}';
+    return 'PaymentRef{timestamp: ${timestamp}, paymentIdRaw: ${paymentIdRaw}, prefix: ${prefix}}';
   }
 
   PaymentRefT unpack() => PaymentRefT(
       timestamp: timestamp,
       paymentIdRaw: const fb.Uint8ListReader(lazy: false).vTableGetNullable(_bc, _bcOffset, 6),
-      kind: kind);
+      prefix: prefix);
 
   static int pack(fb.Builder fbBuilder, PaymentRefT? object) {
     if (object == null) return 0;
@@ -357,12 +370,12 @@ class PaymentRef {
 class PaymentRefT implements fb.Packable {
   int timestamp;
   List<int>? paymentIdRaw;
-  int kind;
+  int prefix;
 
   PaymentRefT({
       this.timestamp = 0,
       this.paymentIdRaw,
-      this.kind = 0});
+      this.prefix = 0});
 
   @override
   int pack(fb.Builder fbBuilder) {
@@ -371,13 +384,13 @@ class PaymentRefT implements fb.Packable {
     fbBuilder.startTable(3);
     fbBuilder.addInt64(0, timestamp);
     fbBuilder.addOffset(1, paymentIdRawOffset);
-    fbBuilder.addUint8(2, kind);
+    fbBuilder.addUint8(2, prefix);
     return fbBuilder.endTable();
   }
 
   @override
   String toString() {
-    return 'PaymentRefT{timestamp: ${timestamp}, paymentIdRaw: ${paymentIdRaw}, kind: ${kind}}';
+    return 'PaymentRefT{timestamp: ${timestamp}, paymentIdRaw: ${paymentIdRaw}, prefix: ${prefix}}';
   }
 }
 
@@ -406,8 +419,8 @@ class PaymentRefBuilder {
     fbBuilder.addOffset(1, offset);
     return fbBuilder.offset;
   }
-  int addKind(int? kind) {
-    fbBuilder.addUint8(2, kind);
+  int addPrefix(int? prefix) {
+    fbBuilder.addUint8(2, prefix);
     return fbBuilder.offset;
   }
 
@@ -419,16 +432,16 @@ class PaymentRefBuilder {
 class PaymentRefObjectBuilder extends fb.ObjectBuilder {
   final int? _timestamp;
   final List<int>? _paymentIdRaw;
-  final int? _kind;
+  final int? _prefix;
 
   PaymentRefObjectBuilder({
     int? timestamp,
     List<int>? paymentIdRaw,
-    int? kind,
+    int? prefix,
   })
       : _timestamp = timestamp,
         _paymentIdRaw = paymentIdRaw,
-        _kind = kind;
+        _prefix = prefix;
 
   /// Finish building, and store into the [fbBuilder].
   @override
@@ -438,7 +451,7 @@ class PaymentRefObjectBuilder extends fb.ObjectBuilder {
     fbBuilder.startTable(3);
     fbBuilder.addInt64(0, _timestamp);
     fbBuilder.addOffset(1, paymentIdRawOffset);
-    fbBuilder.addUint8(2, _kind);
+    fbBuilder.addUint8(2, _prefix);
     return fbBuilder.endTable();
   }
 
@@ -462,23 +475,23 @@ class MediaRef {
   final fb.BufferContext _bc;
   final int _bcOffset;
 
-  int get timestamp => const fb.Int64Reader().vTableGet(_bc, _bcOffset, 4, 0);
-  int get place => const fb.Uint16Reader().vTableGet(_bc, _bcOffset, 6, 0);
-  MediaId? get mediaId => MediaId.reader.vTableGetNullable(_bc, _bcOffset, 8);
-  bool get permanent => const fb.BoolReader().vTableGet(_bc, _bcOffset, 10, false);
-  int get kind => const fb.Uint8Reader().vTableGet(_bc, _bcOffset, 12, 0);
+  int get prefix => const fb.Uint8Reader().vTableGet(_bc, _bcOffset, 4, 0);
+  int get timestamp => const fb.Int64Reader().vTableGet(_bc, _bcOffset, 6, 0);
+  int get place => const fb.Uint16Reader().vTableGet(_bc, _bcOffset, 8, 0);
+  MediaId? get mediaId => MediaId.reader.vTableGetNullable(_bc, _bcOffset, 10);
+  bool get permanent => const fb.BoolReader().vTableGet(_bc, _bcOffset, 12, false);
 
   @override
   String toString() {
-    return 'MediaRef{timestamp: ${timestamp}, place: ${place}, mediaId: ${mediaId}, permanent: ${permanent}, kind: ${kind}}';
+    return 'MediaRef{prefix: ${prefix}, timestamp: ${timestamp}, place: ${place}, mediaId: ${mediaId}, permanent: ${permanent}}';
   }
 
   MediaRefT unpack() => MediaRefT(
+      prefix: prefix,
       timestamp: timestamp,
       place: place,
       mediaId: mediaId?.unpack(),
-      permanent: permanent,
-      kind: kind);
+      permanent: permanent);
 
   static int pack(fb.Builder fbBuilder, MediaRefT? object) {
     if (object == null) return 0;
@@ -487,34 +500,34 @@ class MediaRef {
 }
 
 class MediaRefT implements fb.Packable {
+  int prefix;
   int timestamp;
   int place;
   MediaIdT? mediaId;
   bool permanent;
-  int kind;
 
   MediaRefT({
+      this.prefix = 0,
       this.timestamp = 0,
       this.place = 0,
       this.mediaId,
-      this.permanent = false,
-      this.kind = 0});
+      this.permanent = false});
 
   @override
   int pack(fb.Builder fbBuilder) {
     final int? mediaIdOffset = mediaId?.pack(fbBuilder);
     fbBuilder.startTable(5);
-    fbBuilder.addInt64(0, timestamp);
-    fbBuilder.addUint16(1, place);
-    fbBuilder.addOffset(2, mediaIdOffset);
-    fbBuilder.addBool(3, permanent);
-    fbBuilder.addUint8(4, kind);
+    fbBuilder.addUint8(0, prefix);
+    fbBuilder.addInt64(1, timestamp);
+    fbBuilder.addUint16(2, place);
+    fbBuilder.addOffset(3, mediaIdOffset);
+    fbBuilder.addBool(4, permanent);
     return fbBuilder.endTable();
   }
 
   @override
   String toString() {
-    return 'MediaRefT{timestamp: ${timestamp}, place: ${place}, mediaId: ${mediaId}, permanent: ${permanent}, kind: ${kind}}';
+    return 'MediaRefT{prefix: ${prefix}, timestamp: ${timestamp}, place: ${place}, mediaId: ${mediaId}, permanent: ${permanent}}';
   }
 }
 
@@ -535,24 +548,24 @@ class MediaRefBuilder {
     fbBuilder.startTable(5);
   }
 
+  int addPrefix(int? prefix) {
+    fbBuilder.addUint8(0, prefix);
+    return fbBuilder.offset;
+  }
   int addTimestamp(int? timestamp) {
-    fbBuilder.addInt64(0, timestamp);
+    fbBuilder.addInt64(1, timestamp);
     return fbBuilder.offset;
   }
   int addPlace(int? place) {
-    fbBuilder.addUint16(1, place);
+    fbBuilder.addUint16(2, place);
     return fbBuilder.offset;
   }
   int addMediaIdOffset(int? offset) {
-    fbBuilder.addOffset(2, offset);
+    fbBuilder.addOffset(3, offset);
     return fbBuilder.offset;
   }
   int addPermanent(bool? permanent) {
-    fbBuilder.addBool(3, permanent);
-    return fbBuilder.offset;
-  }
-  int addKind(int? kind) {
-    fbBuilder.addUint8(4, kind);
+    fbBuilder.addBool(4, permanent);
     return fbBuilder.offset;
   }
 
@@ -562,35 +575,35 @@ class MediaRefBuilder {
 }
 
 class MediaRefObjectBuilder extends fb.ObjectBuilder {
+  final int? _prefix;
   final int? _timestamp;
   final int? _place;
   final MediaIdObjectBuilder? _mediaId;
   final bool? _permanent;
-  final int? _kind;
 
   MediaRefObjectBuilder({
+    int? prefix,
     int? timestamp,
     int? place,
     MediaIdObjectBuilder? mediaId,
     bool? permanent,
-    int? kind,
   })
-      : _timestamp = timestamp,
+      : _prefix = prefix,
+        _timestamp = timestamp,
         _place = place,
         _mediaId = mediaId,
-        _permanent = permanent,
-        _kind = kind;
+        _permanent = permanent;
 
   /// Finish building, and store into the [fbBuilder].
   @override
   int finish(fb.Builder fbBuilder) {
     final int? mediaIdOffset = _mediaId?.getOrCreateOffset(fbBuilder);
     fbBuilder.startTable(5);
-    fbBuilder.addInt64(0, _timestamp);
-    fbBuilder.addUint16(1, _place);
-    fbBuilder.addOffset(2, mediaIdOffset);
-    fbBuilder.addBool(3, _permanent);
-    fbBuilder.addUint8(4, _kind);
+    fbBuilder.addUint8(0, _prefix);
+    fbBuilder.addInt64(1, _timestamp);
+    fbBuilder.addUint16(2, _place);
+    fbBuilder.addOffset(3, mediaIdOffset);
+    fbBuilder.addBool(4, _permanent);
     return fbBuilder.endTable();
   }
 
@@ -616,17 +629,17 @@ class NodeId {
 
   int get timestamp => const fb.Int64Reader().vTableGet(_bc, _bcOffset, 4, 0);
   int get u32 => const fb.Uint32Reader().vTableGet(_bc, _bcOffset, 6, 0);
-  int get kind => const fb.Uint8Reader().vTableGet(_bc, _bcOffset, 8, 0);
+  int get prefix => const fb.Uint8Reader().vTableGet(_bc, _bcOffset, 8, 0);
 
   @override
   String toString() {
-    return 'NodeId{timestamp: ${timestamp}, u32: ${u32}, kind: ${kind}}';
+    return 'NodeId{timestamp: ${timestamp}, u32: ${u32}, prefix: ${prefix}}';
   }
 
   NodeIdT unpack() => NodeIdT(
       timestamp: timestamp,
       u32: u32,
-      kind: kind);
+      prefix: prefix);
 
   static int pack(fb.Builder fbBuilder, NodeIdT? object) {
     if (object == null) return 0;
@@ -637,25 +650,25 @@ class NodeId {
 class NodeIdT implements fb.Packable {
   int timestamp;
   int u32;
-  int kind;
+  int prefix;
 
   NodeIdT({
       this.timestamp = 0,
       this.u32 = 0,
-      this.kind = 0});
+      this.prefix = 0});
 
   @override
   int pack(fb.Builder fbBuilder) {
     fbBuilder.startTable(3);
     fbBuilder.addInt64(0, timestamp);
     fbBuilder.addUint32(1, u32);
-    fbBuilder.addUint8(2, kind);
+    fbBuilder.addUint8(2, prefix);
     return fbBuilder.endTable();
   }
 
   @override
   String toString() {
-    return 'NodeIdT{timestamp: ${timestamp}, u32: ${u32}, kind: ${kind}}';
+    return 'NodeIdT{timestamp: ${timestamp}, u32: ${u32}, prefix: ${prefix}}';
   }
 }
 
@@ -684,8 +697,8 @@ class NodeIdBuilder {
     fbBuilder.addUint32(1, u32);
     return fbBuilder.offset;
   }
-  int addKind(int? kind) {
-    fbBuilder.addUint8(2, kind);
+  int addPrefix(int? prefix) {
+    fbBuilder.addUint8(2, prefix);
     return fbBuilder.offset;
   }
 
@@ -697,16 +710,16 @@ class NodeIdBuilder {
 class NodeIdObjectBuilder extends fb.ObjectBuilder {
   final int? _timestamp;
   final int? _u32;
-  final int? _kind;
+  final int? _prefix;
 
   NodeIdObjectBuilder({
     int? timestamp,
     int? u32,
-    int? kind,
+    int? prefix,
   })
       : _timestamp = timestamp,
         _u32 = u32,
-        _kind = kind;
+        _prefix = prefix;
 
   /// Finish building, and store into the [fbBuilder].
   @override
@@ -714,7 +727,7 @@ class NodeIdObjectBuilder extends fb.ObjectBuilder {
     fbBuilder.startTable(3);
     fbBuilder.addInt64(0, _timestamp);
     fbBuilder.addUint32(1, _u32);
-    fbBuilder.addUint8(2, _kind);
+    fbBuilder.addUint8(2, _prefix);
     return fbBuilder.endTable();
   }
 
@@ -738,23 +751,23 @@ class Root {
   final fb.BufferContext _bc;
   final int _bcOffset;
 
-  NodeId? get primary => NodeId.reader.vTableGetNullable(_bc, _bcOffset, 4);
-  NodeId? get secondary => NodeId.reader.vTableGetNullable(_bc, _bcOffset, 6);
-  int get timestamp => const fb.Int64Reader().vTableGet(_bc, _bcOffset, 8, 0);
-  int get chatPlace => const fb.Uint16Reader().vTableGet(_bc, _bcOffset, 10, 0);
-  int get kind => const fb.Uint8Reader().vTableGet(_bc, _bcOffset, 12, 0);
+  int get prefix => const fb.Uint8Reader().vTableGet(_bc, _bcOffset, 4, 0);
+  NodeId? get primary => NodeId.reader.vTableGetNullable(_bc, _bcOffset, 6);
+  NodeId? get secondary => NodeId.reader.vTableGetNullable(_bc, _bcOffset, 8);
+  int get timestamp => const fb.Int64Reader().vTableGet(_bc, _bcOffset, 10, 0);
+  int get chatPlace => const fb.Uint16Reader().vTableGet(_bc, _bcOffset, 12, 0);
 
   @override
   String toString() {
-    return 'Root{primary: ${primary}, secondary: ${secondary}, timestamp: ${timestamp}, chatPlace: ${chatPlace}, kind: ${kind}}';
+    return 'Root{prefix: ${prefix}, primary: ${primary}, secondary: ${secondary}, timestamp: ${timestamp}, chatPlace: ${chatPlace}}';
   }
 
   RootT unpack() => RootT(
+      prefix: prefix,
       primary: primary?.unpack(),
       secondary: secondary?.unpack(),
       timestamp: timestamp,
-      chatPlace: chatPlace,
-      kind: kind);
+      chatPlace: chatPlace);
 
   static int pack(fb.Builder fbBuilder, RootT? object) {
     if (object == null) return 0;
@@ -763,35 +776,35 @@ class Root {
 }
 
 class RootT implements fb.Packable {
+  int prefix;
   NodeIdT? primary;
   NodeIdT? secondary;
   int timestamp;
   int chatPlace;
-  int kind;
 
   RootT({
+      this.prefix = 0,
       this.primary,
       this.secondary,
       this.timestamp = 0,
-      this.chatPlace = 0,
-      this.kind = 0});
+      this.chatPlace = 0});
 
   @override
   int pack(fb.Builder fbBuilder) {
     final int? primaryOffset = primary?.pack(fbBuilder);
     final int? secondaryOffset = secondary?.pack(fbBuilder);
     fbBuilder.startTable(5);
-    fbBuilder.addOffset(0, primaryOffset);
-    fbBuilder.addOffset(1, secondaryOffset);
-    fbBuilder.addInt64(2, timestamp);
-    fbBuilder.addUint16(3, chatPlace);
-    fbBuilder.addUint8(4, kind);
+    fbBuilder.addUint8(0, prefix);
+    fbBuilder.addOffset(1, primaryOffset);
+    fbBuilder.addOffset(2, secondaryOffset);
+    fbBuilder.addInt64(3, timestamp);
+    fbBuilder.addUint16(4, chatPlace);
     return fbBuilder.endTable();
   }
 
   @override
   String toString() {
-    return 'RootT{primary: ${primary}, secondary: ${secondary}, timestamp: ${timestamp}, chatPlace: ${chatPlace}, kind: ${kind}}';
+    return 'RootT{prefix: ${prefix}, primary: ${primary}, secondary: ${secondary}, timestamp: ${timestamp}, chatPlace: ${chatPlace}}';
   }
 }
 
@@ -812,24 +825,24 @@ class RootBuilder {
     fbBuilder.startTable(5);
   }
 
-  int addPrimaryOffset(int? offset) {
-    fbBuilder.addOffset(0, offset);
+  int addPrefix(int? prefix) {
+    fbBuilder.addUint8(0, prefix);
     return fbBuilder.offset;
   }
-  int addSecondaryOffset(int? offset) {
+  int addPrimaryOffset(int? offset) {
     fbBuilder.addOffset(1, offset);
     return fbBuilder.offset;
   }
+  int addSecondaryOffset(int? offset) {
+    fbBuilder.addOffset(2, offset);
+    return fbBuilder.offset;
+  }
   int addTimestamp(int? timestamp) {
-    fbBuilder.addInt64(2, timestamp);
+    fbBuilder.addInt64(3, timestamp);
     return fbBuilder.offset;
   }
   int addChatPlace(int? chatPlace) {
-    fbBuilder.addUint16(3, chatPlace);
-    return fbBuilder.offset;
-  }
-  int addKind(int? kind) {
-    fbBuilder.addUint8(4, kind);
+    fbBuilder.addUint16(4, chatPlace);
     return fbBuilder.offset;
   }
 
@@ -839,24 +852,24 @@ class RootBuilder {
 }
 
 class RootObjectBuilder extends fb.ObjectBuilder {
+  final int? _prefix;
   final NodeIdObjectBuilder? _primary;
   final NodeIdObjectBuilder? _secondary;
   final int? _timestamp;
   final int? _chatPlace;
-  final int? _kind;
 
   RootObjectBuilder({
+    int? prefix,
     NodeIdObjectBuilder? primary,
     NodeIdObjectBuilder? secondary,
     int? timestamp,
     int? chatPlace,
-    int? kind,
   })
-      : _primary = primary,
+      : _prefix = prefix,
+        _primary = primary,
         _secondary = secondary,
         _timestamp = timestamp,
-        _chatPlace = chatPlace,
-        _kind = kind;
+        _chatPlace = chatPlace;
 
   /// Finish building, and store into the [fbBuilder].
   @override
@@ -864,11 +877,11 @@ class RootObjectBuilder extends fb.ObjectBuilder {
     final int? primaryOffset = _primary?.getOrCreateOffset(fbBuilder);
     final int? secondaryOffset = _secondary?.getOrCreateOffset(fbBuilder);
     fbBuilder.startTable(5);
-    fbBuilder.addOffset(0, primaryOffset);
-    fbBuilder.addOffset(1, secondaryOffset);
-    fbBuilder.addInt64(2, _timestamp);
-    fbBuilder.addUint16(3, _chatPlace);
-    fbBuilder.addUint8(4, _kind);
+    fbBuilder.addUint8(0, _prefix);
+    fbBuilder.addOffset(1, primaryOffset);
+    fbBuilder.addOffset(2, secondaryOffset);
+    fbBuilder.addInt64(3, _timestamp);
+    fbBuilder.addUint16(4, _chatPlace);
     return fbBuilder.endTable();
   }
 
@@ -896,11 +909,11 @@ class PushId {
   int get timestamp => const fb.Int64Reader().vTableGet(_bc, _bcOffset, 6, 0);
   NodeId? get nodeId => NodeId.reader.vTableGetNullable(_bc, _bcOffset, 8);
   int get device => const fb.Uint32Reader().vTableGet(_bc, _bcOffset, 10, 0);
-  int get kind => const fb.Uint8Reader().vTableGet(_bc, _bcOffset, 12, 0);
+  int get prefix => const fb.Uint8Reader().vTableGet(_bc, _bcOffset, 12, 0);
 
   @override
   String toString() {
-    return 'PushId{u32: ${u32}, timestamp: ${timestamp}, nodeId: ${nodeId}, device: ${device}, kind: ${kind}}';
+    return 'PushId{u32: ${u32}, timestamp: ${timestamp}, nodeId: ${nodeId}, device: ${device}, prefix: ${prefix}}';
   }
 
   PushIdT unpack() => PushIdT(
@@ -908,7 +921,7 @@ class PushId {
       timestamp: timestamp,
       nodeId: nodeId?.unpack(),
       device: device,
-      kind: kind);
+      prefix: prefix);
 
   static int pack(fb.Builder fbBuilder, PushIdT? object) {
     if (object == null) return 0;
@@ -921,14 +934,14 @@ class PushIdT implements fb.Packable {
   int timestamp;
   NodeIdT? nodeId;
   int device;
-  int kind;
+  int prefix;
 
   PushIdT({
       this.u32 = 0,
       this.timestamp = 0,
       this.nodeId,
       this.device = 0,
-      this.kind = 0});
+      this.prefix = 0});
 
   @override
   int pack(fb.Builder fbBuilder) {
@@ -938,13 +951,13 @@ class PushIdT implements fb.Packable {
     fbBuilder.addInt64(1, timestamp);
     fbBuilder.addOffset(2, nodeIdOffset);
     fbBuilder.addUint32(3, device);
-    fbBuilder.addUint8(4, kind);
+    fbBuilder.addUint8(4, prefix);
     return fbBuilder.endTable();
   }
 
   @override
   String toString() {
-    return 'PushIdT{u32: ${u32}, timestamp: ${timestamp}, nodeId: ${nodeId}, device: ${device}, kind: ${kind}}';
+    return 'PushIdT{u32: ${u32}, timestamp: ${timestamp}, nodeId: ${nodeId}, device: ${device}, prefix: ${prefix}}';
   }
 }
 
@@ -981,8 +994,8 @@ class PushIdBuilder {
     fbBuilder.addUint32(3, device);
     return fbBuilder.offset;
   }
-  int addKind(int? kind) {
-    fbBuilder.addUint8(4, kind);
+  int addPrefix(int? prefix) {
+    fbBuilder.addUint8(4, prefix);
     return fbBuilder.offset;
   }
 
@@ -996,20 +1009,20 @@ class PushIdObjectBuilder extends fb.ObjectBuilder {
   final int? _timestamp;
   final NodeIdObjectBuilder? _nodeId;
   final int? _device;
-  final int? _kind;
+  final int? _prefix;
 
   PushIdObjectBuilder({
     int? u32,
     int? timestamp,
     NodeIdObjectBuilder? nodeId,
     int? device,
-    int? kind,
+    int? prefix,
   })
       : _u32 = u32,
         _timestamp = timestamp,
         _nodeId = nodeId,
         _device = device,
-        _kind = kind;
+        _prefix = prefix;
 
   /// Finish building, and store into the [fbBuilder].
   @override
@@ -1020,7 +1033,7 @@ class PushIdObjectBuilder extends fb.ObjectBuilder {
     fbBuilder.addInt64(1, _timestamp);
     fbBuilder.addOffset(2, nodeIdOffset);
     fbBuilder.addUint32(3, _device);
-    fbBuilder.addUint8(4, _kind);
+    fbBuilder.addUint8(4, _prefix);
     return fbBuilder.endTable();
   }
 
