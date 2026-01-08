@@ -84,7 +84,8 @@ enum IdKind {
   Hex(13),
   Timestamp(14),
   Versionstamp(15),
-  Strings(16);
+  Strings(16),
+  Thumbnail(17);
 
   final int value;
   const IdKind(this.value);
@@ -108,6 +109,7 @@ enum IdKind {
       case 14: return IdKind.Timestamp;
       case 15: return IdKind.Versionstamp;
       case 16: return IdKind.Strings;
+      case 17: return IdKind.Thumbnail;
       default: throw StateError('Invalid value $value for bit flag enum');
     }
   }
@@ -116,7 +118,7 @@ enum IdKind {
       value == null ? null : IdKind.fromValue(value);
 
   static const int minValue = 0;
-  static const int maxValue = 16;
+  static const int maxValue = 17;
   static const fb.Reader<IdKind> reader = _IdKindReader();
 }
 
