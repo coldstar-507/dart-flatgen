@@ -2043,7 +2043,7 @@ class BoostRequest2 {
   int get deviceId => const fb.Uint32Reader().vTableGet(_bc, _bcOffset, 12, 0);
   int get senderId => const fb.Uint64Reader().vTableGet(_bc, _bcOffset, 14, 0);
   List<int>? get senderPublicKey => const fb.Uint8ListReader().vTableGetNullable(_bc, _bcOffset, 16);
-  String? get senderCreationClusterName => const fb.StringReader().vTableGetNullable(_bc, _bcOffset, 18);
+  int get senderCreationCluster => const fb.Uint16Reader().vTableGet(_bc, _bcOffset, 18, 0);
   int get satsPerPerson => const fb.Uint32Reader().vTableGet(_bc, _bcOffset, 20, 0);
   BoostQuery? get query => BoostQuery.reader.vTableGetNullable(_bc, _bcOffset, 22);
   List<int>? get messageId => const fb.Uint8ListReader().vTableGetNullable(_bc, _bcOffset, 24);
@@ -2054,7 +2054,7 @@ class BoostRequest2 {
 
   @override
   String toString() {
-    return 'BoostRequest2{jobId: ${jobId}, requestClusterName: ${requestClusterName}, requestTime: ${requestTime}, token: ${token}, deviceId: ${deviceId}, senderId: ${senderId}, senderPublicKey: ${senderPublicKey}, senderCreationClusterName: ${senderCreationClusterName}, satsPerPerson: ${satsPerPerson}, query: ${query}, messageId: ${messageId}, inputSats: ${inputSats}, feeSats: ${feeSats}, feeBytes: ${feeBytes}, partialTxs: ${partialTxs}}';
+    return 'BoostRequest2{jobId: ${jobId}, requestClusterName: ${requestClusterName}, requestTime: ${requestTime}, token: ${token}, deviceId: ${deviceId}, senderId: ${senderId}, senderPublicKey: ${senderPublicKey}, senderCreationCluster: ${senderCreationCluster}, satsPerPerson: ${satsPerPerson}, query: ${query}, messageId: ${messageId}, inputSats: ${inputSats}, feeSats: ${feeSats}, feeBytes: ${feeBytes}, partialTxs: ${partialTxs}}';
   }
 
   BoostRequest2T unpack() => BoostRequest2T(
@@ -2065,7 +2065,7 @@ class BoostRequest2 {
       deviceId: deviceId,
       senderId: senderId,
       senderPublicKey: const fb.Uint8ListReader(lazy: false).vTableGetNullable(_bc, _bcOffset, 16),
-      senderCreationClusterName: senderCreationClusterName,
+      senderCreationCluster: senderCreationCluster,
       satsPerPerson: satsPerPerson,
       query: query?.unpack(),
       messageId: const fb.Uint8ListReader(lazy: false).vTableGetNullable(_bc, _bcOffset, 24),
@@ -2088,7 +2088,7 @@ class BoostRequest2T implements fb.Packable {
   int deviceId;
   int senderId;
   List<int>? senderPublicKey;
-  String? senderCreationClusterName;
+  int senderCreationCluster;
   int satsPerPerson;
   BoostQueryT? query;
   List<int>? messageId;
@@ -2105,7 +2105,7 @@ class BoostRequest2T implements fb.Packable {
       this.deviceId = 0,
       this.senderId = 0,
       this.senderPublicKey,
-      this.senderCreationClusterName,
+      this.senderCreationCluster = 0,
       this.satsPerPerson = 0,
       this.query,
       this.messageId,
@@ -2124,8 +2124,6 @@ class BoostRequest2T implements fb.Packable {
         : fbBuilder.writeString(token!);
     final int? senderPublicKeyOffset = senderPublicKey == null ? null
         : fbBuilder.writeListUint8(senderPublicKey!);
-    final int? senderCreationClusterNameOffset = senderCreationClusterName == null ? null
-        : fbBuilder.writeString(senderCreationClusterName!);
     final int? queryOffset = query?.pack(fbBuilder);
     final int? messageIdOffset = messageId == null ? null
         : fbBuilder.writeListUint8(messageId!);
@@ -2139,7 +2137,7 @@ class BoostRequest2T implements fb.Packable {
     fbBuilder.addUint32(4, deviceId);
     fbBuilder.addUint64(5, senderId);
     fbBuilder.addOffset(6, senderPublicKeyOffset);
-    fbBuilder.addOffset(7, senderCreationClusterNameOffset);
+    fbBuilder.addUint16(7, senderCreationCluster);
     fbBuilder.addUint32(8, satsPerPerson);
     fbBuilder.addOffset(9, queryOffset);
     fbBuilder.addOffset(10, messageIdOffset);
@@ -2152,7 +2150,7 @@ class BoostRequest2T implements fb.Packable {
 
   @override
   String toString() {
-    return 'BoostRequest2T{jobId: ${jobId}, requestClusterName: ${requestClusterName}, requestTime: ${requestTime}, token: ${token}, deviceId: ${deviceId}, senderId: ${senderId}, senderPublicKey: ${senderPublicKey}, senderCreationClusterName: ${senderCreationClusterName}, satsPerPerson: ${satsPerPerson}, query: ${query}, messageId: ${messageId}, inputSats: ${inputSats}, feeSats: ${feeSats}, feeBytes: ${feeBytes}, partialTxs: ${partialTxs}}';
+    return 'BoostRequest2T{jobId: ${jobId}, requestClusterName: ${requestClusterName}, requestTime: ${requestTime}, token: ${token}, deviceId: ${deviceId}, senderId: ${senderId}, senderPublicKey: ${senderPublicKey}, senderCreationCluster: ${senderCreationCluster}, satsPerPerson: ${satsPerPerson}, query: ${query}, messageId: ${messageId}, inputSats: ${inputSats}, feeSats: ${feeSats}, feeBytes: ${feeBytes}, partialTxs: ${partialTxs}}';
   }
 }
 
@@ -2201,8 +2199,8 @@ class BoostRequest2Builder {
     fbBuilder.addOffset(6, offset);
     return fbBuilder.offset;
   }
-  int addSenderCreationClusterNameOffset(int? offset) {
-    fbBuilder.addOffset(7, offset);
+  int addSenderCreationCluster(int? senderCreationCluster) {
+    fbBuilder.addUint16(7, senderCreationCluster);
     return fbBuilder.offset;
   }
   int addSatsPerPerson(int? satsPerPerson) {
@@ -2247,7 +2245,7 @@ class BoostRequest2ObjectBuilder extends fb.ObjectBuilder {
   final int? _deviceId;
   final int? _senderId;
   final List<int>? _senderPublicKey;
-  final String? _senderCreationClusterName;
+  final int? _senderCreationCluster;
   final int? _satsPerPerson;
   final BoostQueryObjectBuilder? _query;
   final List<int>? _messageId;
@@ -2264,7 +2262,7 @@ class BoostRequest2ObjectBuilder extends fb.ObjectBuilder {
     int? deviceId,
     int? senderId,
     List<int>? senderPublicKey,
-    String? senderCreationClusterName,
+    int? senderCreationCluster,
     int? satsPerPerson,
     BoostQueryObjectBuilder? query,
     List<int>? messageId,
@@ -2280,7 +2278,7 @@ class BoostRequest2ObjectBuilder extends fb.ObjectBuilder {
         _deviceId = deviceId,
         _senderId = senderId,
         _senderPublicKey = senderPublicKey,
-        _senderCreationClusterName = senderCreationClusterName,
+        _senderCreationCluster = senderCreationCluster,
         _satsPerPerson = satsPerPerson,
         _query = query,
         _messageId = messageId,
@@ -2300,8 +2298,6 @@ class BoostRequest2ObjectBuilder extends fb.ObjectBuilder {
         : fbBuilder.writeString(_token);
     final int? senderPublicKeyOffset = _senderPublicKey == null ? null
         : fbBuilder.writeListUint8(_senderPublicKey);
-    final int? senderCreationClusterNameOffset = _senderCreationClusterName == null ? null
-        : fbBuilder.writeString(_senderCreationClusterName);
     final int? queryOffset = _query?.getOrCreateOffset(fbBuilder);
     final int? messageIdOffset = _messageId == null ? null
         : fbBuilder.writeListUint8(_messageId);
@@ -2315,7 +2311,7 @@ class BoostRequest2ObjectBuilder extends fb.ObjectBuilder {
     fbBuilder.addUint32(4, _deviceId);
     fbBuilder.addUint64(5, _senderId);
     fbBuilder.addOffset(6, senderPublicKeyOffset);
-    fbBuilder.addOffset(7, senderCreationClusterNameOffset);
+    fbBuilder.addUint16(7, _senderCreationCluster);
     fbBuilder.addUint32(8, _satsPerPerson);
     fbBuilder.addOffset(9, queryOffset);
     fbBuilder.addOffset(10, messageIdOffset);
@@ -2355,10 +2351,11 @@ class Booster {
   int get utxoIx => const fb.Uint32Reader().vTableGet(_bc, _bcOffset, 16, 0);
   List<String>? get interests => const fb.ListReader<String>(fb.StringReader()).vTableGetNullable(_bc, _bcOffset, 18);
   List<int>? get msgId => const fb.Uint8ListReader().vTableGetNullable(_bc, _bcOffset, 20);
+  int get nonce => const fb.Uint64Reader().vTableGet(_bc, _bcOffset, 22, 0);
 
   @override
   String toString() {
-    return 'Booster{timestamp: ${timestamp}, senderId: ${senderId}, receiverId: ${receiverId}, sats: ${sats}, txid: ${txid}, secret: ${secret}, utxoIx: ${utxoIx}, interests: ${interests}, msgId: ${msgId}}';
+    return 'Booster{timestamp: ${timestamp}, senderId: ${senderId}, receiverId: ${receiverId}, sats: ${sats}, txid: ${txid}, secret: ${secret}, utxoIx: ${utxoIx}, interests: ${interests}, msgId: ${msgId}, nonce: ${nonce}}';
   }
 
   BoosterT unpack() => BoosterT(
@@ -2370,7 +2367,8 @@ class Booster {
       secret: const fb.Uint8ListReader(lazy: false).vTableGetNullable(_bc, _bcOffset, 14),
       utxoIx: utxoIx,
       interests: const fb.ListReader<String>(fb.StringReader(), lazy: false).vTableGetNullable(_bc, _bcOffset, 18),
-      msgId: const fb.Uint8ListReader(lazy: false).vTableGetNullable(_bc, _bcOffset, 20));
+      msgId: const fb.Uint8ListReader(lazy: false).vTableGetNullable(_bc, _bcOffset, 20),
+      nonce: nonce);
 
   static int pack(fb.Builder fbBuilder, BoosterT? object) {
     if (object == null) return 0;
@@ -2388,6 +2386,7 @@ class BoosterT implements fb.Packable {
   int utxoIx;
   List<String>? interests;
   List<int>? msgId;
+  int nonce;
 
   BoosterT({
       this.timestamp = 0,
@@ -2398,7 +2397,8 @@ class BoosterT implements fb.Packable {
       this.secret,
       this.utxoIx = 0,
       this.interests,
-      this.msgId});
+      this.msgId,
+      this.nonce = 0});
 
   @override
   int pack(fb.Builder fbBuilder) {
@@ -2410,7 +2410,7 @@ class BoosterT implements fb.Packable {
         : fbBuilder.writeList(interests!.map(fbBuilder.writeString).toList());
     final int? msgIdOffset = msgId == null ? null
         : fbBuilder.writeListUint8(msgId!);
-    fbBuilder.startTable(9);
+    fbBuilder.startTable(10);
     fbBuilder.addInt64(0, timestamp);
     fbBuilder.addUint64(1, senderId);
     fbBuilder.addUint64(2, receiverId);
@@ -2420,12 +2420,13 @@ class BoosterT implements fb.Packable {
     fbBuilder.addUint32(6, utxoIx);
     fbBuilder.addOffset(7, interestsOffset);
     fbBuilder.addOffset(8, msgIdOffset);
+    fbBuilder.addUint64(9, nonce);
     return fbBuilder.endTable();
   }
 
   @override
   String toString() {
-    return 'BoosterT{timestamp: ${timestamp}, senderId: ${senderId}, receiverId: ${receiverId}, sats: ${sats}, txid: ${txid}, secret: ${secret}, utxoIx: ${utxoIx}, interests: ${interests}, msgId: ${msgId}}';
+    return 'BoosterT{timestamp: ${timestamp}, senderId: ${senderId}, receiverId: ${receiverId}, sats: ${sats}, txid: ${txid}, secret: ${secret}, utxoIx: ${utxoIx}, interests: ${interests}, msgId: ${msgId}, nonce: ${nonce}}';
   }
 }
 
@@ -2443,7 +2444,7 @@ class BoosterBuilder {
   final fb.Builder fbBuilder;
 
   void begin() {
-    fbBuilder.startTable(9);
+    fbBuilder.startTable(10);
   }
 
   int addTimestamp(int? timestamp) {
@@ -2482,6 +2483,10 @@ class BoosterBuilder {
     fbBuilder.addOffset(8, offset);
     return fbBuilder.offset;
   }
+  int addNonce(int? nonce) {
+    fbBuilder.addUint64(9, nonce);
+    return fbBuilder.offset;
+  }
 
   int finish() {
     return fbBuilder.endTable();
@@ -2498,6 +2503,7 @@ class BoosterObjectBuilder extends fb.ObjectBuilder {
   final int? _utxoIx;
   final List<String>? _interests;
   final List<int>? _msgId;
+  final int? _nonce;
 
   BoosterObjectBuilder({
     int? timestamp,
@@ -2509,6 +2515,7 @@ class BoosterObjectBuilder extends fb.ObjectBuilder {
     int? utxoIx,
     List<String>? interests,
     List<int>? msgId,
+    int? nonce,
   })
       : _timestamp = timestamp,
         _senderId = senderId,
@@ -2518,7 +2525,8 @@ class BoosterObjectBuilder extends fb.ObjectBuilder {
         _secret = secret,
         _utxoIx = utxoIx,
         _interests = interests,
-        _msgId = msgId;
+        _msgId = msgId,
+        _nonce = nonce;
 
   /// Finish building, and store into the [fbBuilder].
   @override
@@ -2531,7 +2539,7 @@ class BoosterObjectBuilder extends fb.ObjectBuilder {
         : fbBuilder.writeList(_interests.map(fbBuilder.writeString).toList());
     final int? msgIdOffset = _msgId == null ? null
         : fbBuilder.writeListUint8(_msgId);
-    fbBuilder.startTable(9);
+    fbBuilder.startTable(10);
     fbBuilder.addInt64(0, _timestamp);
     fbBuilder.addUint64(1, _senderId);
     fbBuilder.addUint64(2, _receiverId);
@@ -2541,6 +2549,7 @@ class BoosterObjectBuilder extends fb.ObjectBuilder {
     fbBuilder.addUint32(6, _utxoIx);
     fbBuilder.addOffset(7, interestsOffset);
     fbBuilder.addOffset(8, msgIdOffset);
+    fbBuilder.addUint64(9, _nonce);
     return fbBuilder.endTable();
   }
 
