@@ -1636,30 +1636,26 @@ class BoostRequest {
   int get senderCreationCluster => const fb.Uint16Reader().vTableGet(_bc, _bcOffset, 4, 0);
   int get deviceId => const fb.Uint32Reader().vTableGet(_bc, _bcOffset, 6, 0);
   int get satsPerPerson => const fb.Uint32Reader().vTableGet(_bc, _bcOffset, 8, 0);
-  String? get jobId => const fb.StringReader().vTableGetNullable(_bc, _bcOffset, 10);
-  String? get requestClusterName => const fb.StringReader().vTableGetNullable(_bc, _bcOffset, 12);
-  String? get token => const fb.StringReader().vTableGetNullable(_bc, _bcOffset, 14);
-  List<int>? get senderPublicKey => const fb.Uint8ListReader().vTableGetNullable(_bc, _bcOffset, 16);
-  BoostQuery? get query => BoostQuery.reader.vTableGetNullable(_bc, _bcOffset, 18);
-  List<int>? get messageId => const fb.Uint8ListReader().vTableGetNullable(_bc, _bcOffset, 20);
-  List<PartialTx>? get partialTxs => const fb.ListReader<PartialTx>(PartialTx.reader).vTableGetNullable(_bc, _bcOffset, 22);
-  int get requestTime => const fb.Int64Reader().vTableGet(_bc, _bcOffset, 24, 0);
-  int get senderId => const fb.Uint64Reader().vTableGet(_bc, _bcOffset, 26, 0);
-  int get inputSats => const fb.Uint64Reader().vTableGet(_bc, _bcOffset, 28, 0);
-  int get feeSats => const fb.Uint64Reader().vTableGet(_bc, _bcOffset, 30, 0);
-  int get feeBytes => const fb.Uint64Reader().vTableGet(_bc, _bcOffset, 32, 0);
+  String? get token => const fb.StringReader().vTableGetNullable(_bc, _bcOffset, 10);
+  List<int>? get senderPublicKey => const fb.Uint8ListReader().vTableGetNullable(_bc, _bcOffset, 12);
+  BoostQuery? get query => BoostQuery.reader.vTableGetNullable(_bc, _bcOffset, 14);
+  List<int>? get messageId => const fb.Uint8ListReader().vTableGetNullable(_bc, _bcOffset, 16);
+  List<PartialTx>? get partialTxs => const fb.ListReader<PartialTx>(PartialTx.reader).vTableGetNullable(_bc, _bcOffset, 18);
+  int get requestTime => const fb.Int64Reader().vTableGet(_bc, _bcOffset, 20, 0);
+  int get senderId => const fb.Uint64Reader().vTableGet(_bc, _bcOffset, 22, 0);
+  int get inputSats => const fb.Uint64Reader().vTableGet(_bc, _bcOffset, 24, 0);
+  int get feeSats => const fb.Uint64Reader().vTableGet(_bc, _bcOffset, 26, 0);
+  int get feeBytes => const fb.Uint64Reader().vTableGet(_bc, _bcOffset, 28, 0);
 
   @override
   String toString() {
-    return 'BoostRequest{senderCreationCluster: ${senderCreationCluster}, deviceId: ${deviceId}, satsPerPerson: ${satsPerPerson}, jobId: ${jobId}, requestClusterName: ${requestClusterName}, token: ${token}, senderPublicKey: ${senderPublicKey}, query: ${query}, messageId: ${messageId}, partialTxs: ${partialTxs}, requestTime: ${requestTime}, senderId: ${senderId}, inputSats: ${inputSats}, feeSats: ${feeSats}, feeBytes: ${feeBytes}}';
+    return 'BoostRequest{senderCreationCluster: ${senderCreationCluster}, deviceId: ${deviceId}, satsPerPerson: ${satsPerPerson}, token: ${token}, senderPublicKey: ${senderPublicKey}, query: ${query}, messageId: ${messageId}, partialTxs: ${partialTxs}, requestTime: ${requestTime}, senderId: ${senderId}, inputSats: ${inputSats}, feeSats: ${feeSats}, feeBytes: ${feeBytes}}';
   }
 
   BoostRequestT unpack() => BoostRequestT(
       senderCreationCluster: senderCreationCluster,
       deviceId: deviceId,
       satsPerPerson: satsPerPerson,
-      jobId: jobId,
-      requestClusterName: requestClusterName,
       token: token,
       senderPublicKey: senderPublicKey?.toList(),
       query: query?.unpack(),
@@ -1681,8 +1677,6 @@ class BoostRequestT implements fb.Packable {
   int senderCreationCluster;
   int deviceId;
   int satsPerPerson;
-  String? jobId;
-  String? requestClusterName;
   String? token;
   List<int>? senderPublicKey;
   BoostQueryT? query;
@@ -1698,8 +1692,6 @@ class BoostRequestT implements fb.Packable {
       this.senderCreationCluster = 0,
       this.deviceId = 0,
       this.satsPerPerson = 0,
-      this.jobId,
-      this.requestClusterName,
       this.token,
       this.senderPublicKey,
       this.query,
@@ -1713,10 +1705,6 @@ class BoostRequestT implements fb.Packable {
 
   @override
   int pack(fb.Builder fbBuilder) {
-    final int? jobIdOffset = jobId == null ? null
-        : fbBuilder.writeString(jobId!);
-    final int? requestClusterNameOffset = requestClusterName == null ? null
-        : fbBuilder.writeString(requestClusterName!);
     final int? tokenOffset = token == null ? null
         : fbBuilder.writeString(token!);
     final int? senderPublicKeyOffset = senderPublicKey == null ? null
@@ -1726,28 +1714,26 @@ class BoostRequestT implements fb.Packable {
         : fbBuilder.writeListUint8(messageId!);
     final int? partialTxsOffset = partialTxs == null ? null
         : fbBuilder.writeList(partialTxs!.map((b) => b.pack(fbBuilder)).toList());
-    fbBuilder.startTable(15);
+    fbBuilder.startTable(13);
     fbBuilder.addUint16(0, senderCreationCluster);
     fbBuilder.addUint32(1, deviceId);
     fbBuilder.addUint32(2, satsPerPerson);
-    fbBuilder.addOffset(3, jobIdOffset);
-    fbBuilder.addOffset(4, requestClusterNameOffset);
-    fbBuilder.addOffset(5, tokenOffset);
-    fbBuilder.addOffset(6, senderPublicKeyOffset);
-    fbBuilder.addOffset(7, queryOffset);
-    fbBuilder.addOffset(8, messageIdOffset);
-    fbBuilder.addOffset(9, partialTxsOffset);
-    fbBuilder.addInt64(10, requestTime);
-    fbBuilder.addUint64(11, senderId);
-    fbBuilder.addUint64(12, inputSats);
-    fbBuilder.addUint64(13, feeSats);
-    fbBuilder.addUint64(14, feeBytes);
+    fbBuilder.addOffset(3, tokenOffset);
+    fbBuilder.addOffset(4, senderPublicKeyOffset);
+    fbBuilder.addOffset(5, queryOffset);
+    fbBuilder.addOffset(6, messageIdOffset);
+    fbBuilder.addOffset(7, partialTxsOffset);
+    fbBuilder.addInt64(8, requestTime);
+    fbBuilder.addUint64(9, senderId);
+    fbBuilder.addUint64(10, inputSats);
+    fbBuilder.addUint64(11, feeSats);
+    fbBuilder.addUint64(12, feeBytes);
     return fbBuilder.endTable();
   }
 
   @override
   String toString() {
-    return 'BoostRequestT{senderCreationCluster: ${senderCreationCluster}, deviceId: ${deviceId}, satsPerPerson: ${satsPerPerson}, jobId: ${jobId}, requestClusterName: ${requestClusterName}, token: ${token}, senderPublicKey: ${senderPublicKey}, query: ${query}, messageId: ${messageId}, partialTxs: ${partialTxs}, requestTime: ${requestTime}, senderId: ${senderId}, inputSats: ${inputSats}, feeSats: ${feeSats}, feeBytes: ${feeBytes}}';
+    return 'BoostRequestT{senderCreationCluster: ${senderCreationCluster}, deviceId: ${deviceId}, satsPerPerson: ${satsPerPerson}, token: ${token}, senderPublicKey: ${senderPublicKey}, query: ${query}, messageId: ${messageId}, partialTxs: ${partialTxs}, requestTime: ${requestTime}, senderId: ${senderId}, inputSats: ${inputSats}, feeSats: ${feeSats}, feeBytes: ${feeBytes}}';
   }
 }
 
@@ -1765,7 +1751,7 @@ class BoostRequestBuilder {
   final fb.Builder fbBuilder;
 
   void begin() {
-    fbBuilder.startTable(15);
+    fbBuilder.startTable(13);
   }
 
   int addSenderCreationCluster(int? senderCreationCluster) {
@@ -1780,52 +1766,44 @@ class BoostRequestBuilder {
     fbBuilder.addUint32(2, satsPerPerson);
     return fbBuilder.offset;
   }
-  int addJobIdOffset(int? offset) {
+  int addTokenOffset(int? offset) {
     fbBuilder.addOffset(3, offset);
     return fbBuilder.offset;
   }
-  int addRequestClusterNameOffset(int? offset) {
+  int addSenderPublicKeyOffset(int? offset) {
     fbBuilder.addOffset(4, offset);
     return fbBuilder.offset;
   }
-  int addTokenOffset(int? offset) {
+  int addQueryOffset(int? offset) {
     fbBuilder.addOffset(5, offset);
     return fbBuilder.offset;
   }
-  int addSenderPublicKeyOffset(int? offset) {
+  int addMessageIdOffset(int? offset) {
     fbBuilder.addOffset(6, offset);
     return fbBuilder.offset;
   }
-  int addQueryOffset(int? offset) {
+  int addPartialTxsOffset(int? offset) {
     fbBuilder.addOffset(7, offset);
     return fbBuilder.offset;
   }
-  int addMessageIdOffset(int? offset) {
-    fbBuilder.addOffset(8, offset);
-    return fbBuilder.offset;
-  }
-  int addPartialTxsOffset(int? offset) {
-    fbBuilder.addOffset(9, offset);
-    return fbBuilder.offset;
-  }
   int addRequestTime(int? requestTime) {
-    fbBuilder.addInt64(10, requestTime);
+    fbBuilder.addInt64(8, requestTime);
     return fbBuilder.offset;
   }
   int addSenderId(int? senderId) {
-    fbBuilder.addUint64(11, senderId);
+    fbBuilder.addUint64(9, senderId);
     return fbBuilder.offset;
   }
   int addInputSats(int? inputSats) {
-    fbBuilder.addUint64(12, inputSats);
+    fbBuilder.addUint64(10, inputSats);
     return fbBuilder.offset;
   }
   int addFeeSats(int? feeSats) {
-    fbBuilder.addUint64(13, feeSats);
+    fbBuilder.addUint64(11, feeSats);
     return fbBuilder.offset;
   }
   int addFeeBytes(int? feeBytes) {
-    fbBuilder.addUint64(14, feeBytes);
+    fbBuilder.addUint64(12, feeBytes);
     return fbBuilder.offset;
   }
 
@@ -1838,8 +1816,6 @@ class BoostRequestObjectBuilder extends fb.ObjectBuilder {
   final int? _senderCreationCluster;
   final int? _deviceId;
   final int? _satsPerPerson;
-  final String? _jobId;
-  final String? _requestClusterName;
   final String? _token;
   final List<int>? _senderPublicKey;
   final BoostQueryObjectBuilder? _query;
@@ -1855,8 +1831,6 @@ class BoostRequestObjectBuilder extends fb.ObjectBuilder {
     int? senderCreationCluster,
     int? deviceId,
     int? satsPerPerson,
-    String? jobId,
-    String? requestClusterName,
     String? token,
     List<int>? senderPublicKey,
     BoostQueryObjectBuilder? query,
@@ -1871,8 +1845,6 @@ class BoostRequestObjectBuilder extends fb.ObjectBuilder {
       : _senderCreationCluster = senderCreationCluster,
         _deviceId = deviceId,
         _satsPerPerson = satsPerPerson,
-        _jobId = jobId,
-        _requestClusterName = requestClusterName,
         _token = token,
         _senderPublicKey = senderPublicKey,
         _query = query,
@@ -1887,10 +1859,6 @@ class BoostRequestObjectBuilder extends fb.ObjectBuilder {
   /// Finish building, and store into the [fbBuilder].
   @override
   int finish(fb.Builder fbBuilder) {
-    final int? jobIdOffset = _jobId == null ? null
-        : fbBuilder.writeString(_jobId);
-    final int? requestClusterNameOffset = _requestClusterName == null ? null
-        : fbBuilder.writeString(_requestClusterName);
     final int? tokenOffset = _token == null ? null
         : fbBuilder.writeString(_token);
     final int? senderPublicKeyOffset = _senderPublicKey == null ? null
@@ -1900,22 +1868,20 @@ class BoostRequestObjectBuilder extends fb.ObjectBuilder {
         : fbBuilder.writeListUint8(_messageId);
     final int? partialTxsOffset = _partialTxs == null ? null
         : fbBuilder.writeList(_partialTxs.map((b) => b.getOrCreateOffset(fbBuilder)).toList());
-    fbBuilder.startTable(15);
+    fbBuilder.startTable(13);
     fbBuilder.addUint16(0, _senderCreationCluster);
     fbBuilder.addUint32(1, _deviceId);
     fbBuilder.addUint32(2, _satsPerPerson);
-    fbBuilder.addOffset(3, jobIdOffset);
-    fbBuilder.addOffset(4, requestClusterNameOffset);
-    fbBuilder.addOffset(5, tokenOffset);
-    fbBuilder.addOffset(6, senderPublicKeyOffset);
-    fbBuilder.addOffset(7, queryOffset);
-    fbBuilder.addOffset(8, messageIdOffset);
-    fbBuilder.addOffset(9, partialTxsOffset);
-    fbBuilder.addInt64(10, _requestTime);
-    fbBuilder.addUint64(11, _senderId);
-    fbBuilder.addUint64(12, _inputSats);
-    fbBuilder.addUint64(13, _feeSats);
-    fbBuilder.addUint64(14, _feeBytes);
+    fbBuilder.addOffset(3, tokenOffset);
+    fbBuilder.addOffset(4, senderPublicKeyOffset);
+    fbBuilder.addOffset(5, queryOffset);
+    fbBuilder.addOffset(6, messageIdOffset);
+    fbBuilder.addOffset(7, partialTxsOffset);
+    fbBuilder.addInt64(8, _requestTime);
+    fbBuilder.addUint64(9, _senderId);
+    fbBuilder.addUint64(10, _inputSats);
+    fbBuilder.addUint64(11, _feeSats);
+    fbBuilder.addUint64(12, _feeBytes);
     return fbBuilder.endTable();
   }
 
