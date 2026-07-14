@@ -3238,6 +3238,123 @@ class OffsetObjectBuilder extends fb.ObjectBuilder {
     return fbBuilder.buffer;
   }
 }
+class MessageEvent2 {
+  MessageEvent2._(this._bc, this._bcOffset);
+  factory MessageEvent2(List<int> bytes) {
+    final rootRef = fb.BufferContext.fromBytes(bytes);
+    return reader.read(rootRef, 0);
+  }
+
+  static const fb.Reader<MessageEvent2> reader = _MessageEvent2Reader();
+
+  final fb.BufferContext _bc;
+  final int _bcOffset;
+
+  MessageId? get chatId => MessageId.reader.vTableGetNullable(_bc, _bcOffset, 4);
+  List<int>? get payload => const fb.Uint8ListReader().vTableGetNullable(_bc, _bcOffset, 6);
+
+  @override
+  String toString() {
+    return 'MessageEvent2{chatId: ${chatId}, payload: ${payload}}';
+  }
+
+  MessageEvent2T unpack() => MessageEvent2T(
+      chatId: chatId?.unpack(),
+      payload: const fb.Uint8ListReader(lazy: false).vTableGetNullable(_bc, _bcOffset, 6));
+
+  static int pack(fb.Builder fbBuilder, MessageEvent2T? object) {
+    if (object == null) return 0;
+    return object.pack(fbBuilder);
+  }
+}
+
+class MessageEvent2T implements fb.Packable {
+  MessageIdT? chatId;
+  List<int>? payload;
+
+  MessageEvent2T({
+      this.chatId,
+      this.payload});
+
+  @override
+  int pack(fb.Builder fbBuilder) {
+    final int? chatIdOffset = chatId?.pack(fbBuilder);
+    final int? payloadOffset = payload == null ? null
+        : fbBuilder.writeListUint8(payload!);
+    fbBuilder.startTable(2);
+    fbBuilder.addOffset(0, chatIdOffset);
+    fbBuilder.addOffset(1, payloadOffset);
+    return fbBuilder.endTable();
+  }
+
+  @override
+  String toString() {
+    return 'MessageEvent2T{chatId: ${chatId}, payload: ${payload}}';
+  }
+}
+
+class _MessageEvent2Reader extends fb.TableReader<MessageEvent2> {
+  const _MessageEvent2Reader();
+
+  @override
+  MessageEvent2 createObject(fb.BufferContext bc, int offset) => 
+    MessageEvent2._(bc, offset);
+}
+
+class MessageEvent2Builder {
+  MessageEvent2Builder(this.fbBuilder);
+
+  final fb.Builder fbBuilder;
+
+  void begin() {
+    fbBuilder.startTable(2);
+  }
+
+  int addChatIdOffset(int? offset) {
+    fbBuilder.addOffset(0, offset);
+    return fbBuilder.offset;
+  }
+  int addPayloadOffset(int? offset) {
+    fbBuilder.addOffset(1, offset);
+    return fbBuilder.offset;
+  }
+
+  int finish() {
+    return fbBuilder.endTable();
+  }
+}
+
+class MessageEvent2ObjectBuilder extends fb.ObjectBuilder {
+  final MessageIdObjectBuilder? _chatId;
+  final List<int>? _payload;
+
+  MessageEvent2ObjectBuilder({
+    MessageIdObjectBuilder? chatId,
+    List<int>? payload,
+  })
+      : _chatId = chatId,
+        _payload = payload;
+
+  /// Finish building, and store into the [fbBuilder].
+  @override
+  int finish(fb.Builder fbBuilder) {
+    final int? chatIdOffset = _chatId?.getOrCreateOffset(fbBuilder);
+    final int? payloadOffset = _payload == null ? null
+        : fbBuilder.writeListUint8(_payload);
+    fbBuilder.startTable(2);
+    fbBuilder.addOffset(0, chatIdOffset);
+    fbBuilder.addOffset(1, payloadOffset);
+    return fbBuilder.endTable();
+  }
+
+  /// Convenience method to serialize to byte list.
+  @override
+  Uint8List toBytes([String? fileIdentifier]) {
+    final fbBuilder = fb.Builder(deduplicateTables: false);
+    fbBuilder.finish(finish(fbBuilder), fileIdentifier);
+    return fbBuilder.buffer;
+  }
+}
 class MessageEvent {
   MessageEvent._(this._bc, this._bcOffset);
   factory MessageEvent(List<int> bytes) {
