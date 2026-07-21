@@ -93,7 +93,7 @@ class IdKind {
       value == null ? null : IdKind.fromValue(value);
 
   static const int minValue = 0;
-  static const int maxValue = 21;
+  static const int maxValue = 22;
   static bool containsValue(int value) => values.containsKey(value);
 
   static const IdKind Message = IdKind._(0);
@@ -118,6 +118,7 @@ class IdKind {
   static const IdKind Funding = IdKind._(19);
   static const IdKind Boosting = IdKind._(20);
   static const IdKind NaivePayment = IdKind._(21);
+  static const IdKind StickerRef = IdKind._(22);
   static const Map<int, IdKind> values = {
     0: Message,
     1: Room,
@@ -140,7 +141,8 @@ class IdKind {
     18: Access,
     19: Funding,
     20: Boosting,
-    21: NaivePayment};
+    21: NaivePayment,
+    22: StickerRef};
 
   static const fb.Reader<IdKind> reader = _IdKindReader();
 
