@@ -3003,11 +3003,10 @@ class MediaReference {
   int get cluster => const fb.Uint16Reader().vTableGet(_bc, _bcOffset, 8, 0);
   List<int>? get rawId => const fb.Uint8ListReader().vTableGetNullable(_bc, _bcOffset, 10);
   int get timestamp => const fb.Int64Reader().vTableGet(_bc, _bcOffset, 12, 0);
-  int get group => const fb.Uint64Reader().vTableGet(_bc, _bcOffset, 14, 0);
 
   @override
   String toString() {
-    return 'MediaReference{perm: ${perm}, prefix: ${prefix}, cluster: ${cluster}, rawId: ${rawId}, timestamp: ${timestamp}, group: ${group}}';
+    return 'MediaReference{perm: ${perm}, prefix: ${prefix}, cluster: ${cluster}, rawId: ${rawId}, timestamp: ${timestamp}}';
   }
 
   MediaReferenceT unpack() => MediaReferenceT(
@@ -3015,8 +3014,7 @@ class MediaReference {
       prefix: prefix,
       cluster: cluster,
       rawId: const fb.Uint8ListReader(lazy: false).vTableGetNullable(_bc, _bcOffset, 10),
-      timestamp: timestamp,
-      group: group);
+      timestamp: timestamp);
 
   static int pack(fb.Builder fbBuilder, MediaReferenceT? object) {
     if (object == null) return 0;
@@ -3030,33 +3028,30 @@ class MediaReferenceT implements fb.Packable {
   int cluster;
   List<int>? rawId;
   int timestamp;
-  int group;
 
   MediaReferenceT({
       this.perm = false,
       this.prefix = IdKind.Message,
       this.cluster = 0,
       this.rawId,
-      this.timestamp = 0,
-      this.group = 0});
+      this.timestamp = 0});
 
   @override
   int pack(fb.Builder fbBuilder) {
     final int? rawIdOffset = rawId == null ? null
         : fbBuilder.writeListUint8(rawId!);
-    fbBuilder.startTable(6);
+    fbBuilder.startTable(5);
     fbBuilder.addBool(0, perm);
     fbBuilder.addUint8(1, prefix.value);
     fbBuilder.addUint16(2, cluster);
     fbBuilder.addOffset(3, rawIdOffset);
     fbBuilder.addInt64(4, timestamp);
-    fbBuilder.addUint64(5, group);
     return fbBuilder.endTable();
   }
 
   @override
   String toString() {
-    return 'MediaReferenceT{perm: ${perm}, prefix: ${prefix}, cluster: ${cluster}, rawId: ${rawId}, timestamp: ${timestamp}, group: ${group}}';
+    return 'MediaReferenceT{perm: ${perm}, prefix: ${prefix}, cluster: ${cluster}, rawId: ${rawId}, timestamp: ${timestamp}}';
   }
 }
 
@@ -3074,7 +3069,7 @@ class MediaReferenceBuilder {
   final fb.Builder fbBuilder;
 
   void begin() {
-    fbBuilder.startTable(6);
+    fbBuilder.startTable(5);
   }
 
   int addPerm(bool? perm) {
@@ -3097,10 +3092,6 @@ class MediaReferenceBuilder {
     fbBuilder.addInt64(4, timestamp);
     return fbBuilder.offset;
   }
-  int addGroup(int? group) {
-    fbBuilder.addUint64(5, group);
-    return fbBuilder.offset;
-  }
 
   int finish() {
     return fbBuilder.endTable();
@@ -3113,7 +3104,6 @@ class MediaReferenceObjectBuilder extends fb.ObjectBuilder {
   final int? _cluster;
   final List<int>? _rawId;
   final int? _timestamp;
-  final int? _group;
 
   MediaReferenceObjectBuilder({
     bool? perm,
@@ -3121,27 +3111,24 @@ class MediaReferenceObjectBuilder extends fb.ObjectBuilder {
     int? cluster,
     List<int>? rawId,
     int? timestamp,
-    int? group,
   })
       : _perm = perm,
         _prefix = prefix,
         _cluster = cluster,
         _rawId = rawId,
-        _timestamp = timestamp,
-        _group = group;
+        _timestamp = timestamp;
 
   /// Finish building, and store into the [fbBuilder].
   @override
   int finish(fb.Builder fbBuilder) {
     final int? rawIdOffset = _rawId == null ? null
         : fbBuilder.writeListUint8(_rawId);
-    fbBuilder.startTable(6);
+    fbBuilder.startTable(5);
     fbBuilder.addBool(0, _perm);
     fbBuilder.addUint8(1, _prefix?.value);
     fbBuilder.addUint16(2, _cluster);
     fbBuilder.addOffset(3, rawIdOffset);
     fbBuilder.addInt64(4, _timestamp);
-    fbBuilder.addUint64(5, _group);
     return fbBuilder.endTable();
   }
 
