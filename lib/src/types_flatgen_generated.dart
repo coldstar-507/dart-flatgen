@@ -2695,7 +2695,7 @@ class MediaId {
   final int _bcOffset;
 
   IdKind get prefix => IdKind.fromValue(const fb.Uint8Reader().vTableGet(_bc, _bcOffset, 4, 0));
-  int get pack => const fb.Uint64Reader().vTableGet(_bc, _bcOffset, 6, 0);
+  int get packId => const fb.Uint64Reader().vTableGet(_bc, _bcOffset, 6, 0);
   int get timestamp => const fb.Int64Reader().vTableGet(_bc, _bcOffset, 8, 0);
   int get u32 => const fb.Uint32Reader().vTableGet(_bc, _bcOffset, 10, 0);
   double get aspectRatio => const fb.Float32Reader().vTableGet(_bc, _bcOffset, 12, 0.0);
@@ -2703,12 +2703,12 @@ class MediaId {
 
   @override
   String toString() {
-    return 'MediaId{prefix: ${prefix}, pack: ${pack}, timestamp: ${timestamp}, u32: ${u32}, aspectRatio: ${aspectRatio}, mediaType: ${mediaType}}';
+    return 'MediaId{prefix: ${prefix}, packId: ${packId}, timestamp: ${timestamp}, u32: ${u32}, aspectRatio: ${aspectRatio}, mediaType: ${mediaType}}';
   }
 
   MediaIdT unpack() => MediaIdT(
       prefix: prefix,
-      pack: pack,
+      packId: packId,
       timestamp: timestamp,
       u32: u32,
       aspectRatio: aspectRatio,
@@ -2722,7 +2722,7 @@ class MediaId {
 
 class MediaIdT implements fb.Packable {
   IdKind prefix;
-  int pack;
+  int packId;
   int timestamp;
   int u32;
   double aspectRatio;
@@ -2730,7 +2730,7 @@ class MediaIdT implements fb.Packable {
 
   MediaIdT({
       this.prefix = IdKind.Message,
-      this.pack = 0,
+      this.packId = 0,
       this.timestamp = 0,
       this.u32 = 0,
       this.aspectRatio = 0.0,
@@ -2740,7 +2740,7 @@ class MediaIdT implements fb.Packable {
   int pack(fb.Builder fbBuilder) {
     fbBuilder.startTable(6);
     fbBuilder.addUint8(0, prefix.value);
-    fbBuilder.addUint64(1, pack);
+    fbBuilder.addUint64(1, packId);
     fbBuilder.addInt64(2, timestamp);
     fbBuilder.addUint32(3, u32);
     fbBuilder.addFloat32(4, aspectRatio);
@@ -2750,7 +2750,7 @@ class MediaIdT implements fb.Packable {
 
   @override
   String toString() {
-    return 'MediaIdT{prefix: ${prefix}, pack: ${pack}, timestamp: ${timestamp}, u32: ${u32}, aspectRatio: ${aspectRatio}, mediaType: ${mediaType}}';
+    return 'MediaIdT{prefix: ${prefix}, packId: ${packId}, timestamp: ${timestamp}, u32: ${u32}, aspectRatio: ${aspectRatio}, mediaType: ${mediaType}}';
   }
 }
 
@@ -2775,8 +2775,8 @@ class MediaIdBuilder {
     fbBuilder.addUint8(0, prefix?.value);
     return fbBuilder.offset;
   }
-  int addPack(int? pack) {
-    fbBuilder.addUint64(1, pack);
+  int addPackId(int? packId) {
+    fbBuilder.addUint64(1, packId);
     return fbBuilder.offset;
   }
   int addTimestamp(int? timestamp) {
@@ -2803,7 +2803,7 @@ class MediaIdBuilder {
 
 class MediaIdObjectBuilder extends fb.ObjectBuilder {
   final IdKind? _prefix;
-  final int? _pack;
+  final int? _packId;
   final int? _timestamp;
   final int? _u32;
   final double? _aspectRatio;
@@ -2811,14 +2811,14 @@ class MediaIdObjectBuilder extends fb.ObjectBuilder {
 
   MediaIdObjectBuilder({
     IdKind? prefix,
-    int? pack,
+    int? packId,
     int? timestamp,
     int? u32,
     double? aspectRatio,
     int? mediaType,
   })
       : _prefix = prefix,
-        _pack = pack,
+        _packId = packId,
         _timestamp = timestamp,
         _u32 = u32,
         _aspectRatio = aspectRatio,
@@ -2829,7 +2829,7 @@ class MediaIdObjectBuilder extends fb.ObjectBuilder {
   int finish(fb.Builder fbBuilder) {
     fbBuilder.startTable(6);
     fbBuilder.addUint8(0, _prefix?.value);
-    fbBuilder.addUint64(1, _pack);
+    fbBuilder.addUint64(1, _packId);
     fbBuilder.addInt64(2, _timestamp);
     fbBuilder.addUint32(3, _u32);
     fbBuilder.addFloat32(4, _aspectRatio);
